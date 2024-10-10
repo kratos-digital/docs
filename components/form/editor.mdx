@@ -1,0 +1,82 @@
+---
+title: "Editor"
+description: "WYSIWYG text editor"
+---
+
+Package is provided by [TipTap](https://tiptap.dev/).
+
+`resources/js/Components/Form/Editor.vue`
+
+## Markdown
+
+Editor supports markdown shortcuts out of the box so you can use them to write faster. [See all the shortcuts here](https://tiptap.dev/docs/examples/basics/markdown-shortcuts).
+
+## Props
+
+Use props to style the look of the editor.
+
+### Toolbar
+
+`toolbar?: string[] | "full" | "basic" | "comment"`
+
+Pass an array of commands you want to enable for current editor or pass the preset name: `basic` or `comment`<br />
+By default, all available commands are enabled.
+
+Here is the list of all available commands:
+
+- **bold**: Convert selected text to bold.
+- **italic**: Convert selected text to italic.
+- **heading**: Heading from 1-6 level. Default is h2 and h3. To override default levels, pass additional prop `headingLevels?: Level[]`.
+- **link**: Convert selected text to link.
+- **list**: Convert selected text to unordered list (bullets).
+- **listOrdered**: Convert selected text to ordered list (numbers).
+- **blockquote**: Convert selected text to quote.
+- **code**: Render selected text to code.
+- **image**: Add image.
+- **hr**: Add horizontal line (text separator).
+- **break**: Add line break.
+- **undo/redo**: Allow undo and redo.
+
+Here is the list of predefined toolbar presets which you can use:
+
+- **full**: Same as default, but with all heading levels included
+- **basic**: bold, italic
+- **comment**: bold, italic, lists, code, image, break, undo/redo
+
+### Sticky toolbar
+
+`stickyToolbar?: boolean`
+
+Make toolbar sticky to be always visible in editor with lots of content. Default is `true`.
+
+### Commands as icon or text
+
+`icons?: boolean`
+
+By default, commands will be rendered as icons with command description tooltip on hover. Set prop to `false` to render commands as text in toolbar.
+
+### Placeholders
+
+`placeholder?: string;`<br />
+`placeholderHeading?: string`
+
+Set placeholders for empty text block and headings. Default placeholders are empty strings.
+
+### Classes
+
+`class?: HTMLAttributes["class"]`<br />
+`contentClass?: HTMLAttributes["class"]`
+
+You can pass list of custom classes via `class` prop to style the look of editor wrapper or editor input area via `content-class`.
+
+For example, to limit the height of editor you can set class to `content-class="max-h-96 overflow-y-auto"`. When editor content reaches the maximum defined height of `24rem` the vertical scrollbar will appear.
+
+## Example
+
+### Default
+
+Full docs coming soon...
+
+### Custom
+
+Full docs coming soon...

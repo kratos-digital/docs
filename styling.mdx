@@ -1,0 +1,112 @@
+---
+title: Styling
+description: "Setup logo, colors, fonts, and other visuals for your application."
+---
+
+import { appUrl } from "/snippets/vars.mdx";
+
+## Theme
+
+There are several predefined shadcn themes: `resources/css/theme-{color}.css`.
+
+To use one of the themes, update this line: `@import url(theme-neutral.css)` in `app.css`.
+
+### Custom themes
+
+If you need completely custom themes to stand out you can generate custom themes.
+
+There an example of custom generated theme `theme-custom.css` using [shadcn-custom-theme](https://github.com/kiliman/shadcn-custom-theme).
+
+This generator works only with Tailwind colors and you can customize it as you like. If you want to create unique theme with completely custom colors, this generator could be a good start.
+
+Custom theme has been generated using this code:
+
+```bash
+npx shadcn-custom-theme primary=orange secondary=green accent=pink gray=neutral
+```
+
+Of course, you can always override default colors with your custom colors on specific places. For example, `Card` background color `bg-red-100 dark:bg-red-900` or `Button` `bg-indigo-600`, etc.
+
+## Logo
+
+Recommended way is to update `resources/js/Components/ApplicationLogo.vue` with your own logo SVG.
+
+Make sure to add this `class="fill-current"` to `svg` tag if you have one-colored logo.
+
+You can also upload PNG or SVG image to the `public` folder and use `img` tag instead.
+
+## Favicon
+
+Generate your favicon files and replace them inside `public` folder.
+
+- android-chrome-192x192.png
+- android-chrome-512x512.png
+- apple-touch-icon.png
+- favicon-16x16.png
+- favicon-32x32.png
+- favicon.ico
+
+## Fonts
+
+By default there are two font families included: `Figtree` and `Inter`.
+
+Default font family is `Figtree`. Class for default font family is `font-body`.
+
+If you want to use `Inter` instead, or any other custom font family, update the `tailwind.config.js` file:
+
+```javascript
+fontFamily: {
+    body: ["Inter", ...defaultTheme.fontFamily.sans],
+}
+```
+
+If you want to add more fonts, check the [official Tailwind docs](https://tailwindcss.com/docs/font-family).
+
+### bunny.net fonts
+
+By default, bunny.net is used to provide the included fonts.
+
+```php
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700|inter:400,500,600,700" rel="stylesheet" />
+```
+
+### Google fonts
+
+To include Google fonts, go to `resources/views/app.blade.php` and similar example instead of the current fonts. Make sure to copy embed code provided by Google, and not the one in example.
+
+```php
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+```
+
+Then update the `tailwind.config.js` accordingly.
+
+### Custom fonts
+
+To use fonts from other providers like Typekit, jsDelivr or Unpkg, just follow their docs and update `app.blade.php` and `tailwind.config.js` accordingly.
+
+If you need help to include custom fonts which are not hosted on any CDN, please, create [Helpdesk ticket](https://butchr.dev/support) in your dashboard.
+
+## Links
+
+Docs coming soon...
+
+## Text highlight
+
+By default, text highlight will be in combination of background and foreground colors.
+
+To update this, go to `resources/css/app.css` and update `selection:bg-foreground` and `selection:text-background`.
+
+```css
+body {
+  @apply selection:bg-foreground selection:text-background;
+}
+```
+
+## Icons
+
+Docs coming soon...

@@ -1,0 +1,93 @@
+---
+title: "Flash Messages"
+description: "Show toast messages sent from controllers."
+---
+
+`resources/js/Components/FlashMessage.vue`
+
+Package: [vue-sonner](https://github.com/xiaoluoboding/vue-sonner).<br />
+Shadcn-vue Sonner component: https://www.shadcn-vue.com/docs/components/sonner.html
+
+This component is already included in all major [layouts](/components/layouts/page) so you don't need to do anything.
+
+## Types
+
+- default
+- success
+- info
+- warning
+- error
+
+<CodeGroup>
+
+```php Success
+return back()->with([
+    'status' => __('User has been created.'), // Toast title
+    'status_description' => "Tony Stark (ironman@example.com)", // Toast description
+    'status_type' => ResponseStatus::Success, // Toast status
+]);
+```
+
+```php Error
+return back()->with([
+    'status' => __('User has been deleted.'),
+    'status_description' => "Tony Stark (ironman@example.com)",
+    'status_type' => ResponseStatus::Error,
+]);
+```
+
+```php Default
+return back()->with([
+    'status' => __('Some response message.'),
+]);
+
+return redirect()->route('this-is-route-name')->with([
+    'status' => __('Some response message.'),
+    'status_description' => __('Some response description.'),
+]);
+```
+
+</CodeGroup>
+
+## Style
+
+You can style toast messages however you like. Just go to the component files (`FlashMessage` and `Sonner`) and make the udpates.
+
+```javascript
+<Toaster position="bottom-right" offset="1rem" :duration="6000" />
+```
+
+### Duration
+
+Duration of the toast message in milliseconds.
+
+### Position
+
+- top-left
+- top-center
+- top-right
+- bottom-left
+- bottom-center
+- bottom-right
+
+### Offset
+
+Offset from the edges of the screen.
+
+### Close button
+
+By default, there is no close button. You can add close button like this:
+
+```javascript
+<Toaster position="bottom-right" offset="1rem" :duration="6000" close-button />
+```
+
+### Colors
+
+By default, every toast message will be in same colors, distinctive by status icons.
+
+To display each message in different color, according to the current status, use this:
+
+```javascript
+<Toaster position="bottom-right" offset="1rem" :duration="6000" rich-colors />
+```

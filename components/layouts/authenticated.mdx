@@ -1,0 +1,24 @@
+---
+title: "Authenticated Layout"
+description: "Layout for pages accessible to authenticated users only."
+---
+
+Full docs coming soon...
+
+## User object
+
+If you need to use User object in your components, you can get it quickly from layout.
+
+```javascript
+<AuthenticatedLayout #default="{ user }">
+    {{ user }}
+</AuthenticatedLayout>
+```
+
+You can see the the real example in `modules/Helpdesk/resources/js/Pages/Index.vue`
+
+Usually you could get User object this way:
+
+```javascript
+const user = computed(() => usePage().props.auth.user);
+```

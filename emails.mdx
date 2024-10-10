@@ -1,0 +1,99 @@
+---
+title: Emails
+description: "Configure your email service."
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Email providers
+
+### Mailtrap
+
+Use in local/dev environment to test email sending.
+
+https://laravel.com/docs/11.x/mail#mailtrap
+
+1. Create and setup [Mailtrap](https://mailtrap.io/) account
+2. Update `.env` file with Mailtrap credentials
+
+```
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your-mailtrap-username
+MAIL_PASSWORD=your-mailtrap-password
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+```
+
+### HELO
+
+Use in local/dev environment to test email sending.
+
+Coming soon...
+
+### Mailpit
+
+Use in local/dev environment to test email sending.
+
+Coming soon...
+
+### Mailgun
+
+Use in prod/staging environment to send real emails.
+
+Coming soon...
+
+### Postmark
+
+Use in prod/staging environment to send real emails.
+
+Coming soon...
+
+### Resend
+
+Use in prod/staging environment to send real emails.
+
+Coming soon...
+
+### MailerSend
+
+Use in prod/staging environment to send real emails.
+
+Coming soon...
+
+### Custom
+
+Use in prod/staging environment to send real emails.
+
+https://laravel.com/docs/11.x/mail#custom-transports
+
+Coming soon...
+
+## Queue emails
+
+All emails are sent using Laravel's [deferred functions](https://laravel.com/docs/11.x/helpers#deferred-functions). If you need to send large amount of emails it's recommended to send them in queues.
+
+### Setup local queue
+
+https://laravel.com/docs/11.x/mail#queueing-mail
+
+Docs coming soon...
+
+### Setup queue worker
+
+Docs coming soon...
+
+### Laravel Horizon
+
+Docs coming soon...
+
+## Email preview
+
+When your are logged in as `Admin`, you can preview emails in non-production environment.
+
+Docs coming soon...
+
+## Email template
+
+Docs coming soon...

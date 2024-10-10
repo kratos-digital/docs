@@ -1,0 +1,87 @@
+---
+title: "Roles and Permissions"
+description: ""
+---
+
+Feature is provided by [Spatie Laravel Permission package](https://spatie.be/docs/laravel-permission/v6/introduction).
+
+## Permissions
+
+It’s recommended to define and create new permissions in enum file `app/Enums/Permission.php`. Enums are then used to seed roles and permissions via file `database/seeders/RoleAndPermissionSeeder.php`.
+
+There is no UI in admin panel to create new permissions.
+
+## Roles
+
+Roles are just an easier way to organize types of users with a list of common permissions.
+
+You can create new roles via admin panel and assign them existing permissions.
+
+### Assign roles to Admin
+
+When creating or updating Admin user you can also add non-related permissions along with the selected role, but you can't remove permissions from the role for specific user. Instead, you can just select permissions wihout the role.
+
+## Policies
+
+Permissions are usually used with Policies to authorize user actions such as viewing, creating, updating or deleting models. Policies are then used (usually) under form requests and controller methods.
+
+Example to allow administrators to view users (authorize policy in controller method):
+
+<CodeGroup>
+
+```php UserPolicy.php
+public function viewAny(Admin $user): bool
+{
+    // Allow admin with "view any users" permission to pass the authentication
+    return $user->can(Permission::ViewAnyUsers->value);
+}
+```
+
+```php UserController.php
+public function index(): Response
+{
+    // Call the UserPolicy@viewAny method to check if user is authorized to view this page
+    $this->authorize('viewAny', User::class);
+
+    // Authorized...
+}
+```
+
+</CodeGroup>
+
+Example to allow administrators to update users (authorize policy in controller for GET and in form request for POST):
+
+<CodeGroup>
+
+```php UserPolicy.php
+public function update(Admin $user): bool
+{
+    // Allow admin with "update users" permission to pass the authentication
+    return $user->can(Permission::UpdateUsers->value);
+}
+```
+
+```php UserController.php
+public function edit(User $user): Response
+{
+    // Call the UserPolicy@update method to check if user is authorized to view this page
+    $this->authorize('update', User::class);
+
+    // Authorized...
+}
+
+public function update(UpdateUserRequest $request, User $user): RedirectResponse
+{
+    // Authorized...
+}
+```
+
+```php UpdateUserRequest.php
+public function authorize(): bool
+{
+    // Call the UserPolicy@update method to check if user is authorized to perform this action
+    return $this->user()->can('update', User::class);
+}
+```
+
+</CodeGroup>

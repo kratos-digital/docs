@@ -1,0 +1,74 @@
+---
+title: "Administrators"
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Introduction
+
+**{appName}** offers a complete authentication system for Administrators out of the box. It is based on Laravel authentication system using `admin` guard.<br />
+Users of application are authenticated via `web` guard.
+
+### Model
+
+Admin users are identified by `Admin` model.
+
+### Admin panel
+
+To access Admin panel go to URL `/admin`.<br />
+You can change the URL path by adding `.env` variable `ADMIN_AREA_ROUTE_PREFIX`.
+
+```bash
+# /super-secret-area instead of /admin
+ADMIN_AREA_ROUTE_PREFIX="super-secret-area"
+```
+
+## Create Super Admin
+
+Open your terminal, run command `php artisan app:admin` and follow the steps to create new Super Admin.<br />
+This command is useful to create new admins or to create your first admin if you won't use seeders to create it.
+
+## Roles
+
+By default, there are several predefined roles for Administrators.
+
+You can delete all the roles and permissions in seeders if you don't need them. This is the case when you only need super admin users. However, there should be one role defined for super admins.
+
+Visit `RoleAndPermissionSeeder.php` to update or delete them.
+
+### Super Admin
+
+Administrators with full access are identified by `Super Admin` role, which you can override by adding `.env` variable `SUPER_ADMIN_ROLE_NAME`.
+
+<Warning>
+  If you use default Seeder you should update the role name before running
+  seeders.
+</Warning>
+
+```
+SUPER_ADMIN_ROLE_NAME="God"
+```
+
+### Manager
+
+Manager is administrator with limited access inside Admin area.
+
+To see all the permissions for Manager role, search for `$roleManager->givePermissionTo` in `RoleAndPermissionSeeder`.
+
+### Blog Manager
+
+This role is created only when Blog module is enabled and has permission to manage blog posts and tags.
+
+Visit `modules/Blog/database/seeders/BlogDatabaseSeeder.php` for more info.
+
+### Helpdesk Manager
+
+Docs coming soon...
+
+### Roadmap Manager
+
+Docs coming soon...
+
+### Testimonials Manager
+
+Docs coming soon...

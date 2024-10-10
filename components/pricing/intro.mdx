@@ -1,0 +1,45 @@
+---
+title: "Pricing"
+description: "Display pricing tables."
+---
+
+## Pricing component
+
+To render pricing tables you can use the main component `resources/js/Components/Sections/Pricing/Pricing.vue`, which will handle the data in the background.
+
+The `payment` prop is fetched from `HomepageController` to `resources/js/Pages/Index.vue` page (view file for index page aka homepage).
+
+<CodeGroup>
+
+```javascript Default
+<Pricing :data="payment" />
+```
+
+```javascript Auto-render
+<Pricing :data="payment" variant="auto" />
+```
+
+</CodeGroup>
+
+Auto variant will render pricing tables according to the number of plans. For one plan it will render **Single product table**, for two plans **Dual products table** and for 3 or more **Default pricing tables**.
+
+Default variant will always render **Default pricing tables** regardless of number of plans.
+
+## Pricing table components
+
+You can also use specific components, instead of the main `Pricing` component. Just follow the links below to see how.
+
+<CardGroup cols={2}>
+  <Card title="Default pricing" href="/components/pricing/default">
+    Simple pricing tables.
+  </Card>
+  <Card title="Single product" href="/components/pricing/single">
+    Pricing table adjusted for one plan.
+  </Card>
+  <Card title="Dual products" href="/components/pricing/dual">
+    Pricing tables adjusted for two plans.
+  </Card>
+  <Card title="With features" href="/components/pricing/features">
+    Pricing tables with features table to compare plans.
+  </Card>
+</CardGroup>

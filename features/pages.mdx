@@ -1,0 +1,56 @@
+---
+title: "Generic Pages"
+description: "Create dynamic pages for your application such as Terms, Privacy, etc."
+---
+
+## Intro
+
+By default there are 4 pre-defined pages which you can update in `PageSeeder.php`:
+
+- Privacy Policy
+- Terms of Service
+- Cookie Policy
+- Licenses
+
+When creating page via seeder, you need to provide required attributes (combination of `route_name` and `group` attributes must be unique):
+
+- **title**: Page title.
+- **url_path**: Unique. URL path of the page.
+- **route_name**: Route name (Laravel named routes).
+- **content**: HTML content of the page.
+- **group**: Optional. Defaults to `legal`. Does not affect the URL.
+
+If you want to use other groups, for example `about`, first you need to add them as enum in `app/Enums/PageGroup.php`:
+
+```php
+enum PageGroup: string
+{
+    case Legal = 'legal';
+    case About = 'about';
+}
+```
+
+```php
+// This will create "Privacy Policy" page with "/privacy-policy" URL and "legal.privacy" route name
+Page::create([
+    'title' => 'Privacy Policy',
+    'url_path' => 'privacy-policy',
+    'route_name' => 'privacy',
+    'content' => '<p>Privacy Policy content...</p>',
+]);
+
+// This will create "About" page with "/about" URL and "about.index" route name
+Page::create([
+    'title' => 'About',
+    'url_path' => 'about',
+    'route_name' => 'index',
+    'group' => PageGroup::About,
+    'content' => '<p>About content...</p>',
+]);
+```
+
+## Admin
+
+Administrators with correct permissions can manage Pages via admin panel.
+
+Full docs coming soon...

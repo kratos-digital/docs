@@ -1,0 +1,413 @@
+---
+title: "DataTable"
+description: "Display content (from database) in feature-rich datatables."
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+`resources/js/Components/DataTable/Index.vue`
+
+Package: [TanStack Table](https://tanstack.com/table/latest)
+
+## Introduction
+
+**{appName}** comes with built-in DataTable module built upon TanStack Table.
+
+Available features:
+
+- Data from query builder (Laravel Eloquent)
+- Row actions (CRUD and custom actions)
+- Sorting, pagination and search
+- Filtering
+- Render as badge and as status
+- Light and dark modes
+- Easy to customize
+- Bulk actions (coming soon)
+- Export to CSV and PDF (coming soon)
+
+To generate DataTable, you should first return `Vue` file via `Inertia::render()` from your Controller.<br />
+Properties `data` and `columns` are required, while `filters` prop is optional.
+
+```php UserController.php
+public function index(): Response
+{
+    return Inertia::render('Admin/Users/Index', [
+        'data' => User::get(),
+        'columns' => [
+            Column::make('id')->toArray(),
+            Column::make('name')->toArray(),
+            Column::make('email')->toArray(),
+            ActionColumn::make(route: 'admin.users')->render(),
+        ],
+        // 'filters' => [],
+    ]);
+}
+```
+
+Then in your file `Admin/Users/Index`, define props and render `DataTable` component.
+
+```javascript
+<script setup lang="ts">
+import { DataTable as DataTableProps } from "@/types";
+
+const props = defineProps<DataTableProps>();
+</script>
+
+<template>
+    <DataTable v-bind="props" />
+</template>
+```
+
+## Columns
+
+Go to `app/Http/Controllers/Admin/UserController.php`, or any similar Controller, and check out `index` method to see how columns are generated.
+
+Columns are generated via `Column::class`, as seen in the code example above.<br />
+Each column should be generated using `make` method and `toArray` as last method in chain.
+
+### Create column
+
+First prop is name/ID of the column and should be unique between columns.<br />
+Second prop is column's title (table head) and it's optional<br />
+When title is not provided, it will be generated from ID. Title for `name` will be _Name_, for `email` will be _Email_, etc.
+
+```php
+Column::make('name', __('Full name'))
+```
+
+### Disable sorting
+
+This column will not be sortable. Columns are sortable by default.
+
+```php
+Column::make('name')->disableSorting()
+```
+
+### Disable hiding
+
+Visiblity toggle for this column will be disabled and column will be visible always. Column visibility toggle is enabled by default.
+
+```php
+Column::make('name')->disableHiding()
+```
+
+### Status (true/false)
+
+Render column as `check` icon for `true` and `x` icon for `false`.
+
+```php
+Column::make('verified')->status()
+```
+
+### Badge
+
+Render column as badge.
+
+```php
+Column::make('tags')->badge()
+```
+
+### Thumbnail
+
+Render column as thumbnail image.
+
+```php
+Column::make('image')->thumbnail()
+```
+
+### Class
+
+Add any class to value.
+
+If class is not generated, safelist it, since it’s dynamically generated and Tailwind can’t recognize such classes on its own.<br />
+Just in case, you can safelist all clasess you plan to use here.
+
+You can safelist classes in `tailwind.config.js` under `safelist` array.
+
+```php
+Column::make('name')->class('font-bold whitespace-nowrap')
+Column::make('email')->class('truncate max-w-16')
+```
+
+### Cell width
+
+Set width of the cell in pixels to prevent auto-sizing or specific width.
+
+```php
+Column::make('name')->size(1)
+```
+
+### Center
+
+Center table header and value.
+
+```php
+Column::make('name')->centered()
+```
+
+### Make column hidden
+
+Useful when you need to filter by some value, but don't want to show the column. For example, when Model is trashed (soft-deleted).<br />
+Since filtering is done via TanStack Table it must have access to the data.
+
+```php
+Column::make('trashed')->hidden()
+```
+
+### Get column data
+
+Along the `make()`, this is the required method which you should call as the last method in chain to get correct data for rendering.
+
+```php
+Column::make('name')->toArray()
+```
+
+### Customize
+
+To update content rendering in DataTables go to file `resources/js/lib/utils.ts` and update function `mapColumns` as you wish.
+
+You can check by `accessorKey` (which is mapped from column name/ID) for specific columns, or you can define new `renderAs` method for common columns.
+
+To update or add Column properties go to file `app/Services/DataTable/Column.php`.
+
+## Actions
+
+Actions should be defined as the last item in `columns` array.<br />
+Actions are generated similar as columns, using chained methods.
+
+### Create action
+
+First prop is column name and should be unique between columns.<br />
+Second prop is the action's label, and it's optional<br />
+When label is not provided, it will be generated from name. Label for `show` will be _Show_, for `edit` will be _Edit_, etc.
+
+```php
+Action::make('show', __('Show order'))
+    ->route('admin.orders.show')
+    ->toArray()
+```
+
+### Action route
+
+Set the route name of the action. By default, routes should be GET and will use model ID as param.
+
+```php
+Action::make('name')->route('admin.orders.show')
+```
+
+### Method and params
+
+Set the route method and params when method is different than GET and there is multiple params or different params than ID.
+
+```php
+Action::make('resolve')
+    ->route('admin.roadmap.status.update')
+    ->method('patch')
+    ->params([
+        // placeholder to use prop from column (:id will use column id value, :name will use column name value, etc.)
+        'post' => ':id',
+        // extra param to update status of roadmap post in this specific case
+        'status' => 'resolved',
+    ])
+```
+
+### Confirm dialog
+
+Trigger confirmation dialog before submitting the action.
+
+Default actions `delete` and `restore` are confirmable by default.
+
+```php
+Action::make('impersonate', __('Login as user'))->confirm()
+```
+
+### Conditional actions
+
+Show action under specified condition.<br />
+This action will be available only when `trashed` column value is `false`.
+
+```php
+Action::make('impersonate', __('Login as user'))->when('trashed', false)
+```
+
+### Separate actions (dropdown)
+
+Separate action with border in dropdown box.
+
+```php
+Action::make('name')->separated()
+```
+
+### Get action data
+
+Along the `make()`, this is the required method which you should call as the last method in chain.
+
+```php
+Action::make('name')->toArray()
+```
+
+### Dropdown actions
+
+Actions can be rendered as dropdown.
+
+Dropdown actions are recommended when there are **more then 3 actions**.<br />
+Check the code below to see how to render dropdown actions.<br />
+
+### Inline actions
+
+Actions can also be rendered as inline, instead of dropdown.
+
+Inline actions are recommended when there are **less than 3 actions**.<br />
+Check the code below to see how to render dropdown actions.<br />
+
+### Default actions
+
+Each DataTable comes with default actions which you can use along the custom ones or completely override. Default actions are `show`, `edit`, `delete` and `restore` (when Model can be [soft-deleted](https://laravel.com/docs/11.x/eloquent#soft-deleting)).
+
+If you need to update your default actions, you can do it here: `app/Services/DataTable/ActionColumn.php` in method `private function getDefaults(): array`.
+
+#### Render as dropdown
+
+`make()` method accepts two optional parameters: `renderAs` and `route`.<br />
+When renderAs is null it will be rendered as dropdown.<br />
+When route is null you should define [custom actions](/modules/datatable#custom-actions).
+
+You should set the **route prefix** for default actions. For example, if you are using resource controller, then the actions will be: _admin.users.show_, _admin.users.edit_, etc. and it's recommended way to name your CRUD routes in this way even when not using resource controller.
+
+```php
+ActionColumn::make(route: 'admin.users')->render()
+```
+
+#### Render as inline
+
+You should set the **route prefix** for default actions. For example, if you are using resource controller, then the actions will be: _admin.users.show_, _admin.users.edit_, etc.
+
+```php
+ActionColumn::make('inline', 'admin.users')->render()
+```
+
+### Custom actions
+
+To define custom actions, you should pass your actions in `render()` method.
+
+```php
+ActionColumn::make('inline')
+    ->render(
+        Action::make('show')
+            ->route('admin.orders.show')
+            ->toArray(),
+
+        Action::make('edit')
+            ->route('admin.orders.edit')
+            ->toArray(),
+    ),
+```
+
+### Custom actions via slots
+
+To define custom actions via Vue slot, you should define the type of actions: inline or dropdown.
+
+```php
+// Dropdown
+ActionColumn::make()->render(),
+
+// Inline
+ActionColumn::make('inline')->render(),
+```
+
+And then define your actions in Vue file.
+
+```javascript
+<template v-slot:actions="{ row }">
+    <Button type="button" variant="link" @click="() => console.log('Edit')">{{ $t("Edit") }}</Button>
+    <Button type="button" variant="link" class="text-destructive" @click="() => console.log('Delete')">{{ $t("Delete") }}</Button>
+</template>
+```
+
+`app/Http/Controllers/Admin/FaqController.php` is using such custom actions.<br />
+Slot example for custom FAQ actions can be found here: `resources/js/Pages/Admin/Faq/Index.vue`
+
+## Filters
+
+Filter key must be equal to the column name/ID, so in this case you should have columns `verified`, `blocked` and `trashed`.
+
+Create filter using `make()` method which accepts one prop for filter title.
+
+```php
+'filters' => [
+    'verified' => Filter::make(__('Email verified'))
+        ->trueFalse(true)
+        ->toArray(),
+
+    'blocked' => Filter::make(__('Blocked'))
+        ->trueFalse(false)
+        ->toArray(),
+
+    'trashed' => Filter::make(__('Trashed'))
+        ->trueFalse(false)
+        ->toArray(),
+],
+```
+
+### Status (true/false)
+
+Filter DataTable by true and false value.
+
+```php
+// Without default fitering
+Filter::make(__('Email verified'))->trueFalse()
+
+// Filter by true on init
+Filter::make(__('Email verified'))->trueFalse(true)
+
+// Filter by false on init
+Filter::make(__('Email verified'))->trueFalse(false)
+```
+
+### Value
+
+Filter DataTable by selected values.
+
+Data of available filters should be Collection or array of arrays with `value` and `label` props.
+
+```php
+$tags = Tag::get()->map(fn ($tag) => [
+    'value' => $tag->slug,
+    'label' => $tag->name,
+]);
+
+Filter::make(__('Tags'))->data($tags)
+```
+
+### Disable search
+
+By default, all filters can be searched and filtered inside dedicated dropdown.
+
+To disable search, use this method.
+
+```php
+Filter::make(__('Tags'))->data($tags)->disableSearch()
+```
+
+### Pre-selected filters
+
+Similar as with true/false, you can set default filters.
+
+Default value can be an array, string or boolean.
+
+```php
+// This example is taken from Helpdesk to filter tickets by currently logged in admin and all unassigned tickets
+Filter::make(__('Admins'))->data($admins)->default([auth()->user()->name, __('Unassigned')])
+```
+
+## Search
+
+Docs coming soon...
+
+## Pagination
+
+Docs coming soon...
+
+### Rows per page
+
+Docs coming soon...

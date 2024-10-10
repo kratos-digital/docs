@@ -1,98 +1,98 @@
 ---
-title: 'Development'
-description: 'Learn how to preview changes locally'
+title: "Development"
+description: "Setup your application"
 ---
 
+import { appName } from "/snippets/vars.mdx";
+
+If you didn't already, follow the `README.md` file or [Quickstart](/quickstart) guide to setup the project requirements.
+
+If you don't want to use [Quick installation](/quickstart#quick-installation) (which is recommended for your first project with **{appName}**), follow these steps.
+
+## Data
+
+### Generate dummy content
+
+`database/seeders/DatabaseDemoSeeder.php`
+
+This command runs migrations and seeds the data for you, so you can skip all other steps in this section.
+
+```bash
+php artisan app:demo
+```
+
 <Info>
-  **Prerequisite** You should have installed Node.js (version 18.10.0 or
-  higher).
+  If you prefer to do migrations and seeds manually, follow the steps below.
 </Info>
 
-Step 1. Install Mintlify on your OS:
+### Run database migrations without data
 
-<CodeGroup>
-
-```bash npm
-npm i -g mintlify
-```
-
-```bash yarn
-yarn global add mintlify
-```
-
-</CodeGroup>
-
-Step 2. Go to the docs are located (where you can find `mint.json`) and run the following command:
+This command will create tables defined in `database/migrations`.
 
 ```bash
-mintlify dev
+php artisan migrate
 ```
 
-The documentation website is now available at `http://localhost:3000`.
+### Seed core data
 
-### Custom Ports
+<Warning>Run only after migrations.</Warning>
 
-Mintlify uses port 3000 by default. You can use the `--port` flag to customize the port Mintlify runs on. For example, use this command to run in port 3333:
+This command will seed data defined in `database/seeders/DatabaseSeeder.php`.
 
 ```bash
-mintlify dev --port 3333
+php artisan db:seed
 ```
 
-You will see an error like this if you try to run Mintlify in a port that's already taken:
+### Seed modules data
 
-```md
-Error: listen EADDRINUSE: address already in use :::3000
+<Warning>Run only after migrations.</Warning>
+
+This command will seed data for each enabled module defined in `modules/{name}/database/seeders`.
+
+```bash
+php artisan module:seed
 ```
 
-## Mintlify Versions
+### Refresh migrations and core data
 
-Each CLI is linked to a specific version of Mintlify. Please update the CLI if your local website looks different than production.
+This command will re-create all tables and seed new data for core application.<br />
+All previously saved data will be removed.
 
-<CodeGroup>
+<Info>This will not generate dummy data.</Info>
 
-```bash npm
-npm i -g mintlify@latest
+```bash
+php artisan migrate:fresh --seed
 ```
 
-```bash yarn
-yarn global upgrade mintlify
+### Refresh migrations and all data
+
+This command will re-create all tables and seed new data for core application and modules.<br />
+All previously saved data will be removed.
+
+<Info>This will not generate dummy data.</Info>
+
+```bash
+php artisan migrate:fresh --seed && php artisan module:seed -a
 ```
 
-</CodeGroup>
+## Observers
 
-## Deployment
+Full docs coming soon...
 
-<Tip>
-  Unlimited editors available under the [Startup
-  Plan](https://mintlify.com/pricing)
-</Tip>
+## Code formatting
 
-You should see the following if the deploy successfully went through:
+**{appName}** uses [Laravel Pint](https://laravel.com/docs/11.x/pint) for code formatting.
 
-<Frame>
-  <img src="/images/checks-passed.png" style={{ borderRadius: '0.5rem' }} />
-</Frame>
+If you prefer to follow same code style then run this command:
 
-## Troubleshooting
+```bash
+./vendor/bin/pint
+```
 
-Here's how to solve some common problems when working with the CLI.
+## Debugbar
 
-<AccordionGroup>
-  <Accordion title="Mintlify is not loading">
-    Update to Node v18. Run `mintlify install` and try again.
-  </Accordion>
-  <Accordion title="No such file or directory on Windows">
-Go to the `C:/Users/Username/.mintlify/` directory and remove the `mint`
-folder. Then Open the Git Bash in this location and run `git clone
-https://github.com/mintlify/mint.git`.
+**{appName}** comes with [Debugbar for Laravel](https://github.com/barryvdh/laravel-debugbar) so you can debug your application easier and faster.
 
-Repeat step 3.
+<Warning>Use the Debugbar only in development.</Warning>
 
-  </Accordion>
-  <Accordion title="Getting an unknown error">
-    Try navigating to the root of your device and delete the ~/.mintlify folder.
-    Then run `mintlify dev` again.
-  </Accordion>
-</AccordionGroup>
-
-Curious about what changed in a CLI version? [Check out the CLI changelog.](/changelog/command-line)
+It is disabled by default. To enable it set `DEBUGBAR_ENABLED` to `true` in your `.env`.

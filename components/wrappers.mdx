@@ -1,0 +1,258 @@
+---
+title: "Wrappers"
+description: "Use to display content in reusable wrappers like page sections, containers, etc."
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Section wrapper
+
+`resources/js/Components/Sections/SectionWrapper.vue`
+
+### HTML tag
+
+`tag?: "div" | "section" | "article"`
+
+Defaults to `section`.
+
+### Paddings
+
+`withoutTopPadding?: boolean`<br />
+`withoutBottomPadding?: boolean`
+
+Sections have predefined top and bottom padding to separate page sections by whitespace.
+
+Set any of those 2 props to `true` to remove top or bottom padding. This is useful when you want to remove the gap between sections with same background color.
+
+### Class
+
+`class?: HTMLAttributes["class"]`
+
+Override paddings, set background color, etc.
+
+### Example
+
+Docs coming soon...
+
+## Container
+
+`resources/js/Components/Sections/Container.vue`
+
+Tailwind container.
+
+Use props to style the look of the component:
+
+### Layout
+
+`layout?: "default" | "full" | "boxed"`
+
+Defaults to `default`.
+
+Use `full` layout when you want to use background without left and right padding.
+
+Use `boxed` layout when you want to use background with default left and right padding.
+
+### Background
+
+`background?: "none" | "primary" | "inverted"`
+
+Defaults to `none`.
+
+Use `primary` to set background in primary color `var(--primary)`.
+
+Use `inverted` to invert background according to current mode. For light mode, background will be dark, and for dark mode background will be light.
+
+### Gaps
+
+`withoutGaps?: boolean`
+
+Container is flex with column direction and included vertical gutters between the elements.
+
+Set to `false` to remove default gutters.
+
+### Class
+
+`class?: HTMLAttributes["class"]`
+
+Override display, gaps, set background color, etc.
+
+### Example
+
+Docs coming soon...
+
+## Application header
+
+`resources/js/Components/AppHeader.vue`
+
+Main header of the pages.
+
+Use props to style the look of the component:
+
+### Sticky
+
+`sticky?: boolean`
+
+Defaults to `true`.
+
+Set to `false` if you don't want sticky header.
+
+### Style
+
+`style?: "default" | "floating"`
+
+Defaults to `default`.
+
+Use `default` to display header in full width with bottom border and no offsets.
+
+Use `floating` to display header with borders and slight offset from the edges.
+
+### Background color
+
+`bg?: "default" | "inverted" | "primary" | "transparent"`
+
+Defaults to `default`.
+
+Use `default` to display header in background color defined by `var(--background)`.
+
+Use `inverted` to display header in background color defined by `var(--background)`, but using color from other theme.<br />
+If current theme is **light**, the **dark** theme background will be used.<br />
+If current theme is **dark**, the **light** theme background will be used.
+
+Use `primary` to display header in background color defined by `var(--primary)`.
+
+Use `transparent` to display header in semi-transparent background color defined by `var(--background)`.
+
+### Shadow
+
+`shadow?: boolean`
+
+Defaults to `false`.
+
+Set to `true` to add shadow to the header.
+
+## Application footer
+
+Footers are used to include useful information at the bottom of each page, like a sitemap to help users navigate the site, links to social media, logo, tagline, copyright information, etc.
+
+### Copyright
+
+You can update copyright content by updating `resources/js/Components/Copyright.vue`.
+
+By default content is `&copy; 2024.`
+
+### Default layout
+
+`resources/js/Components/AppFooter.vue`
+
+This layout will display info and links in grid (vertical on small devices, horizontal on large devices).
+
+Info section consists of logo, tagline, copyright and social media links.
+
+Links are grouped in 3 sections: **Links**, **App** and **Legal**.
+
+You can easily update the layout, change group names, add new groups, etc.
+
+### Centered layout
+
+`resources/js/Components/AppFooterV2.vue`
+
+Content is centered and it consists of logo, important links, less important links (legal pages), social media links and copyright.
+
+Important links are display in 2 or 3 grid columns, depending on screen size.
+
+### Other layouts
+
+<Info>More layouts come with **{appName}** **v2**.</Info>
+
+## Navigation links
+
+All global navigation links are defined in `resources/js/lib/navs.ts`.
+
+Each navigation group should be typed with `NavLink[]`.
+
+### Main menu
+
+`resources/js/Components/MainMenu.vue`
+
+Main menu component is included with `AppHeader`.
+
+### Simple links
+
+You can use simple links in your navigation. Simple links are the links that can lead to another page, scroll to specific section or open external page.
+
+Links should be typed with NavLink defined in `resources/js/types/index.d.ts`.
+
+- **title**: Required. Title/label of the link.
+- **routeName**: Optional. Set route name to link to internal pages.
+- **section**: Optional. Used when scrolling to section ID.
+- **url**: Optional. Set URL to link to external pages or to open in new tab.
+- **active**: Optional. Set the rule to check if current link is active.
+- **icon**: Optional. Icon component.
+
+#### Internal link
+
+Links will lead to `route('blog.index')` and `route('testimonials.index')`. Also, links will be **active** when current page's route name starts with `blog.` or when current page's route name is `testimonials.index`.
+
+```javascript
+const navLinks: NavLink[] = [
+  {
+    title: trans("Blog"),
+    routeName: "blog.index",
+    active: "blog.*",
+  },
+  {
+    title: trans("Testimonials"),
+    routeName: "testimonials.index",
+    active: "testimonials.index",
+  },
+];
+```
+
+#### Link to section
+
+Those links will scroll to the elements `#pricing` or `#faq` ID when on `index` page. Also, links will redirect to `index` page and jump to selected sections when not on `index` page.
+
+```javascript
+const navLinks: NavLink[] = [
+  {
+    title: trans("Pricing"),
+    routeName: "index",
+    section: "#pricing",
+  },
+  {
+    title: trans("FAQ"),
+    routeName: "index",
+    section: "#faq",
+  },
+];
+```
+
+#### External link
+
+This will open internal page in new tab.
+
+```javascript
+const navLinks: NavLink[] = [
+  {
+    title: trans("Documentation"),
+    url: route("docs"),
+  },
+];
+```
+
+This will open external page in new tab.
+
+```javascript
+const navLinks: NavLink[] = [
+  {
+    title: trans("Documentation"),
+    url: "https://docs.butchr.dev",
+  },
+];
+```
+
+### Mega menu
+
+Mega menu is generated with [shadcn-vue Navigation Menu](https://www.shadcn-vue.com/docs/components/navigation-menu.html).
+
+Full docs coming soon...

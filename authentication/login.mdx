@@ -1,0 +1,77 @@
+---
+title: "Registration and Login"
+description: "Settings for user registration and login via email and password."
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Introduction
+
+**{appName}** offers a complete authentication system out of the box. It is based on Laravel authentication system with some additions.
+
+## Update Password Rules
+
+Go to `HandleInertiaRequests.php`, under `share` method and update password rules for your app.
+
+By default, for production environment, password should be at least **8** characters long with at least **one uppercase letter**, **one lowercase letter**, **one number**, **one symbol**, and **not compromised** in a public password data breach leak. You can find all the available rules [here](https://laravel.com/docs/11.x/validation#validating-passwords).
+
+For all other environments (development, testing, staging) it should be only **4** characters long without any other restrictions.
+
+```php
+Password::defaults(function () {
+    return $this->app->isProduction()
+        ? Password::min(8)
+            ->mixedCase()
+            ->numbers()
+            ->symbols()
+            ->uncompromised()
+        : Password::min(4);
+});
+```
+
+## Layout
+
+Authentication system consist of several components:
+
+- Login `resources/js/Pages/Auth/Login.vue`
+- Register `resources/js/Pages/Auth/Register.vue`
+- Email verification `resources/js/Pages/Auth/VerifyEmail.vue`
+- Forgot password `resources/js/Pages/Auth/ForgotPassword.vue`
+- Password reset `resources/js/Pages/Auth/ResetPassword.vue`
+
+Each component is wrapped in `resources/js/Pages/Auth/Partials/Wrapper.vue` where you can customize the layout.
+
+<Info>You can change the layout without updating the code.</Info>
+
+Open your `.env` file and set `AUTH_FORM_LAYOUT` to `centered`, `left` or `right`.<br/ >
+Default layout is `centered`.
+
+**Centered** layout displays just the form in the center of the page.
+
+**Left** and **right** layout displays the form on the left or right side, along with some content and background image.
+
+By default, placeholder image is used as the background image. You can easily update the image, remove it, change background color, add background gradient, etc. Just go to the `Wrapper.vue` component and search for `bg-`.
+
+### Header
+
+Wrapper accepts the `header` property. Header for login and register forms can be updated in `AuthenticatedSessionController` and `RegisteredUserController` controllers under method `header()`.
+
+You can pass an empty array if you don't want to display header and description, or you can remove the description and display the title only.
+
+Headers for other authentication forms are passed as `header` property in their controllers.
+
+### Labels
+
+By default, form input labels are displayed above the input fields. If you want to hide labels, set `AUTH_FORM_SHOW_LABELS` to `false` in your `.env` file.
+
+### Show/hide password
+
+To enable password visibility toggle, pass the prop `toggleable` to `Input` component.
+
+```javascript
+<Input type="password" v-model="form.password" required toggleable />
+```
+
+### Social providers position
+
+By default, social providers for login and registration are displayed below other input fields. To display them at the top, set `AUTH_FORM_SOCIAL_PROVIDERS_POSITION` to `top` in your `.env` file.

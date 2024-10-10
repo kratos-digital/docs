@@ -1,0 +1,124 @@
+---
+title: "SEO / Meta"
+description: "Setup meta data for your pages."
+---
+
+## Intro
+
+`resources/js/Components/AppHead.vue`
+
+This component is already included with the layouts.
+
+## Props
+
+None of the props is required.
+
+- **title**: Page title. Defaults to **pageTitle** global prop if not set.
+- **description**: Page description.
+- **url**: Page canonical URL.
+- **image**: Image URL.
+- **imageWidth**: Image width in pixels.
+- **imageHeight**: Image height in pixels.
+- **imageAlt**: Image title.
+- **author**: Author of the page. Defaults to global author.
+- **twitterCard**: Twitter/X card type. Defaults to global twitter card value.
+- **twtterCreator**: Twitter/X username of the author of the page.
+- **createdAt**: Date when page was created.
+- **updatedAt**: Date when page was last updated.
+- **pagination**: Pagination data.
+
+### How to use it?
+
+Pass the props from Controller.
+
+```php
+return Inertia::render('MyPageIndex', [
+    // other props for this page...
+    'meta' => [
+        'title' => __('Meta title'),
+        'description' => __('Meta description'),
+        'image' => 'url to the image',
+        // other meta props...
+    ],
+]);
+```
+
+Wrap your page in `PageLayout` and meta data will be automatically rendered.
+
+```javascript MyPageIndex.vue
+<PageLayout>
+  <div>Page content...</div>
+</PageLayout>
+```
+
+### Meta title
+
+Meta title can be set in three different ways:
+
+1. Pass the `title` in `meta` prop as in example above.
+2. Set `pageTitle` (without `title` in `meta`) and this value will be used.
+3. Override title (or any other meta tag) in your page components, right after the layout
+
+<CodeGroup>
+
+```php MyPageController.php
+return Inertia::render('MyPageComponent', [
+    'pageTitle' => 'My page title',
+]);
+```
+
+```javascript MyPageIndex.vue
+<PageLayout>
+  <Head :title="$t('My page title')" />
+  <Head>
+    <meta head-key="og:title" property="og:title" :content="$t('My page title')" />
+  </Head>
+
+  <div>Page content...</div>
+</PageLayout>
+```
+
+</CodeGroup>
+
+<Info>I highly recommend to use `meta` prop for public pages.</Info>
+
+### Tab title
+
+Tab title (browser) will be automatically set from meta title.
+
+You can also set or override tab title using `Head` component.
+
+```javascript
+<PageLayout>
+  <Head :title="$t('Tab title')" />
+</PageLayout>
+```
+
+### Pagination
+
+Pagination has three required parameters.
+
+```typescript
+export interface MetaPagination {
+  total: number;
+  perPage: number;
+  currentPage: number;
+}
+```
+
+You can generate such array in PHP using this helper function.
+
+```php
+$data = Model::->paginate();
+
+// This will return array with total, perPage and currentPage
+get_pagination_data($data);
+```
+
+Then you should use this data to render pagination component.
+
+```javascript
+<Pagination :data="meta.pagination" />
+```
+
+Check out `modules/Blog/app/Http/Controllers/PublicBlogController.php` for real example using pagination.

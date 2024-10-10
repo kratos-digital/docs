@@ -1,0 +1,35 @@
+---
+title: "Social Login"
+description: "Allow users to login using Social Media."
+---
+
+[Laravel Socialite](https://laravel.com/docs/11.x/socialite) is package used to enable social media login.
+
+## Configuration
+
+Before using Socialite, you will need to add credentials for the OAuth providers your application utilizes. Typically, these credentials may be retrieved by creating a "developer application" within the dashboard of the service you will be authenticating with.
+
+These credentials should be placed in `config/services.php` file.
+
+## Providers
+
+Socialite supports this list of providers:
+
+- Facebook
+- X
+- LinkedIn
+- Google
+- GitHub
+- GitLab
+- Bitbucket
+- Slack
+
+```php
+'google' => [
+    'client_id' => env('GOOGLE_CLIENT_ID'),
+    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    'redirect' => '/auth/callback/google',
+],
+```
+
+If you need other providers you should extend the package or implement another solution.

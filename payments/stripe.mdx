@@ -1,0 +1,103 @@
+---
+title: "Stripe"
+---
+
+[Laravel Cashier (Stripe)](https://laravel.com/docs/11.x/billing) is package used to enable Stripe payments.
+
+## Intro
+
+Due the limitations of Laravel Cashier for Stripe and Paddle to work with each other by default, there have been some adjustments and modifications:
+
+- updated table names:
+  - `stripe_subscriptions`
+  - `stripe_subscription_items`
+  - `stripe_orders`
+- custom models:
+  - `App\Models\Payments\Stripe\Subscription`
+  - `App\Models\Payments\Stripe\SubscriptionItem`
+  - `App\Models\Payments\Stripe\Order`
+- custom trait: `App\Traits\Billable`
+- custom URL for webhooks `/payment/webhook` named `cashier.webhook`
+
+## Create Stripe account
+
+Create Stripe account and add keys... Docs coming soon...
+
+## Migrations
+
+Docs coming soon...
+
+## Generate products
+
+Go to `config/payments.php` and setup your products and plans.
+
+<Warning>
+  Stripe does not allow updating the price amount, currency or interval.
+</Warning>
+
+If you need to change any of those fields then it's best to create a new price and delete the old price or set it as inactive (if it has been used already).
+
+If you update any of those fields in `payments.php` and run the sync command, it will handle all of this for you.<br />
+Regardless of that you should always check the Stripe dashboard to make sure everything is setup correctly.
+
+You can update product name, description and features. It is not recommended to update product IDs.
+
+### Sync products
+
+To sync Stripe products with the payments file go to your terminal and run this command:
+
+```bash
+php artisan payments:sync-products
+```
+
+Check the Stripe dashboard if everything is in order.
+
+## Webhooks
+
+Stripe can notify your application of a variety of events via webhooks to sync data from Stripe with your database.
+
+You can extend it as you wish following the [offical docs](https://laravel.com/docs/11.x/billing#handling-stripe-webhooks).
+
+### Local
+
+1. To make local webhook URL publicly accessible install [Stripe CLI](https://docs.stripe.com/stripe-cli)
+2. Open your terminal and run stripe-cli: `stripe listen --forward-to localhost:8000/payment/webhook` or `stripe listen --forward-to http://butchr.test/payment/webhook`
+
+<Info>
+  Note that I am using `localhost:8000` instead of custom domain as first
+  example. This is because I couldn't run webhooks with custom domain, but you
+  can try and see if it works for you.
+</Info>
+
+3. Copy webhook secret provided by stripe-cli listener to `STRIPE_WEBHOOK_SECRET` in `.env`.
+4. CSRF should be disabled for webhooks (this is already included)
+
+#### Resend event for testing
+
+If you forgot to run webhooks locally or want to make some updates, you can resend events from terminal.
+
+You can find event IDs in Stripe dashboard.
+
+```bash
+stripe events resend evt_1Q2YfaRujsEDTyysDc3I3DdS
+```
+
+### Production
+
+Docs coming soon...
+
+### Update webhooks
+
+If you need to add new event handlers go to `app/Listeners/StripeEventListener.php` and update it accordingly.
+
+## Billing settings
+
+https://dashboard.stripe.com/settings/billing/automatic
+
+Invoices (subscriptions): https://dashboard.stripe.com/test/settings/billing/invoice
+
+## Billing Portal
+
+Stripe offers an easy way to set up a [billing portal](https://dashboard.stripe.com/test/settings/billing/portal) so that your customer can manage their subscription, payment methods, and view their billing history.
+
+This is only included if you are using subscriptions (it has no specific use for single orders).

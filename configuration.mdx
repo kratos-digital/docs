@@ -1,0 +1,351 @@
+---
+title: Configuration
+description: "Welcome to the home of your new documentation"
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Bootstrap
+
+In file `bootstrap/app.php`, you can setup route, global middlewares, redirects, expections, etc.
+
+Usually you will not need to update anything unless you have specific global middlewares, api routes or other global settings.
+
+## Strict mode
+
+By default, **{appName}** enables strict mode for Eloquent Models in non-production environment.
+
+If you want to disable strict mode then go to `AppServiceProvider.php` and delete or comment this line of code.
+
+```php
+Model::shouldBeStrict(! $this->app->isProduction());
+```
+
+### What is strict mode?
+
+- It prevents lazy loading (n+1 query problem)
+- It prevents creating or updating non-fillable attributes (this kit uses `$guarded` instead, so this will not affect anything unless you start using `$fillable` in Models)
+- and it prevents accessing missing attributes.
+
+### Why should I use strict mode?
+
+It prevents silent data loss, catches typos early, ensures data integrity, and facilitates debugging, so it's recommended to keep the strict more enabled.
+
+## Polymorphic relationships
+
+When using [polymorphic relationships](https://laravel.com/docs/11.x/eloquent-relationships#polymorphic-relationships) in Laravel you must save model name in database along with the ID.
+
+It's good practice to map full class namespaces to readable strings. For example `user` instead of `App\Models\User`.
+
+You can achieve this by enforcing morph map in `AppServiceProvider.php`. Or you can remove to keep using long names.
+
+```php
+Relation::enforceMorphMap([
+    'admin' => \App\Models\Admin::class,
+    'user' => \App\Models\User::class,
+]);
+```
+
+## Models
+
+As mentioned under Strict mode, **{appName}** uses `$guarded`, instead of the default `$fillable` property for mass assignment.
+
+This prevents having bloated Models and allows seemless dynamic addition of new properties.
+
+Instead, **{appName}** uses Form Requests to pass validated data on create or update of Eloquent Models, so it will never end up with bad data.
+
+Here is an example of simple profile update using Form Request `UpdateProfileRequest`. Only validated data from the request is being passed to the `update()` method. This way we are in a total control of data so no need to explicitly define fillable properties.
+
+```php
+public function update(UpdateProfileRequest $request): RedirectResponse
+{
+    $request->user()->update($request->validated());
+
+    return back();
+}
+```
+
+If you are more comfortable with fillable properties, you are free to use them. It will not break or affect the app in any way.
+
+Full docs coming soon...
+
+## Validation
+
+By default, **{appName}** uses Form Requests and Policies to validate form data.
+
+You can follow an official Laravel docs on how to generate [Policies](https://laravel.com/docs/11.x/authorization#generating-policies) and [Form Requests](https://laravel.com/docs/11.x/validation#form-request-validation).
+
+All the predefined core Policies can be found in `/app/Policies` folder, while all the predefined Polices per module can be found under `/modules/{name}/app/Policies` folder.
+
+All the predefined core Form Requests can be found in `/app/Http/Requests` folder, while all the predefined Form Requests per module can be found under `/modules/{name}/app/Http/Requests` folder.
+
+### Authorization
+
+When using form request for validation, you must implement `authorize` method which will allow or prevent further access, based on the rules.
+
+Here you can use Policies or regular conditions.
+
+This is the example from **{appName}** source code to check if users must be authenticated to create Roadmap posts.
+
+```php
+public function authorize(): bool
+{
+    // Guests can't create posts
+    if (config('roadmap.must_be_authenticated') && ! $this->user()) {
+        return false;
+    }
+
+    return true;
+}
+```
+
+### Rules
+
+When using form request for validation, you must implement `rules` method which will define the validation rules.
+
+You can define rules as string where validators are separated with pipe or as array of validators.
+
+[Here](https://laravel.com/docs/11.x/validation#available-validation-rules) you can find the list of all available validators.
+
+```php
+public function rules(): array
+{
+    return [
+        'title' => 'required|string|max:120',
+        'content' => 'required|string',
+    ];
+}
+
+public function rules(): array
+{
+    return [
+        'title' => [
+            'required',
+            'string',
+            'max:120',
+        ],
+        'content' => [
+            'required',
+            'string',
+        ],
+    ];
+}
+```
+
+### Messages
+
+When using form request for validation, you can implement `messages` method where you can customize validation messages. By default, validation messages will use `lang/en/validation.php` translation file.
+
+To define the message for your rules you should use this format `rule_name.validator_name`
+
+```php
+public function messages(): array
+{
+    return [
+        'title.required' => __('Feature title is required.'),
+        'content.required' => __('Feature content is required.'),
+    ];
+}
+```
+
+### Input sanitizer
+
+Package: https://github.com/elegantweb/sanitizer
+
+To use sanitizer in Form Request, you should first use the `SanitizesInput` trait. Then define `filters()` method where you can define [sanitizer rules](https://github.com/elegantweb/sanitizer?tab=readme-ov-file#available-filters) per input field.
+
+```php
+public function filters(): array
+{
+    return [
+        // Capitalize the title
+        'title' => 'capitalize',
+    ];
+}
+```
+
+Or you can validate and sanitize input in your Controller.
+
+```php
+use Elegant\Sanitizer\Sanitizer;
+
+$data = $request->validate([
+    'name' => 'required',
+    'email' => 'required|email',
+]);
+
+$data = (new Sanitizer($data, [
+    'name' => 'capitalize',
+    'email' => 'lowercase',
+]))->sanitize();
+```
+
+### Failed authorization
+
+When using form request for validation, you can implement `failedAuthorization` method where you can customize message for failed authorization. By default, validation messages will be "This action is unauthorized".
+
+```php
+use Illuminate\Auth\Access\AuthorizationException;
+
+protected function failedAuthorization()
+{
+    throw new AuthorizationException(__('You are not allowed to do this.'));
+}
+```
+
+## Shared props
+
+Shared properties are available in every page and component via Inertia `usePage()` method or `$page` variable. Read more about it [here](https://inertiajs.com/shared-data).
+
+### List of props
+
+- **app**: contains common application props such as name, locale, settings, etc.
+- **flash**: contains status, description and type of flash message
+- **modules**: contains all the enabled modules
+- **auth**: contains the data of authenticated user
+
+### Dynamic global props
+
+Pass them via Controller to the view.
+
+- **pageTitle**: main title of the page (also used for tab title and fallback for meta titles)
+- **pageDescription**: main description of the page (also used as fallback for meta descriptions)
+- **pageUrl**: link to the page (used in `AdminLayout` only)
+- **meta**: meta data for SEO, see more [here](/features/seo)
+
+```php
+return Inertia::render('Profile/Index', [
+    'pageTitle' => __('My profile'),
+    'pageDescription' => __('Manage your account information.'),
+]);
+
+return Inertia::render('Roadmap::Admin/Show', [
+    'pageTitle' => $post->title,
+    'pageUrl' => route('roadmap.show', $post->slug),
+]);
+```
+
+### Example
+
+Here is example how to get authenticated user name from shared props using both:
+
+<CodeGroup>
+
+```javascript usePage()
+<script setup lang="ts">
+import { computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
+
+const user = computed(() => usePage().props.auth.user);
+</script>
+
+<template>
+  {{ user?.name }}
+</template>
+```
+
+```javascript $page
+<template>
+  {{ $page.props.auth.user?.name }}
+</template>
+```
+
+</CodeGroup>
+
+Go to `HandleInertiaRequests.php`, under `share` method to view and/or update your shared props.
+
+There is also type `PageProps` for shared props in `/resources/js/types/index.d.ts` which you can update accordingly.
+
+### Ziggy
+
+[Ziggy](https://github.com/tighten/ziggy) is package used to enable Laravel routes inside Vue. Routes are also available as shared prop.
+
+Routes are initialized in file `/resources/views/app.blade.php` using the blade rule `@routes`, which uses the settings from this file `/config/ziggy.php`. Feel free to update it by your project requirements.
+
+By default, all routes are available except admin area routes, which are only available once the Admin has logged in.
+
+```php
+@if (auth()->guard('admin')->check())
+    @routes(['admin'])
+@endif
+```
+
+## Slugs
+
+[Spatie Sluggable](https://github.com/spatie/laravel-sluggable) is package used to enable slug creation for pretty URLs certain Models like blog posts and tags.
+
+To enable slugs you should use the `Spatie\Sluggable\HasSlug` trait and the `Spatie\Sluggable\SlugOptions` class on your Eloquent Model.
+
+You should also add a field to Model's table where generated slug will be saved.
+
+```php
+public function getSlugOptions(): SlugOptions
+{
+    return SlugOptions::create()
+        ->generateSlugsFrom('title')
+        ->saveSlugsTo('slug');
+}
+```
+
+## Media uploads
+
+[Spatie Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction) is package used to provide image uploads.
+
+You can update the settings here: `/config/media-library.php`.<br />
+Default settings are usually good enough.
+
+To enable image uploads you should implement `Spatie\MediaLibrary\HasMedia` interface and use the `App\Traits\HasMediaUploads` trait on your Eloquent Model.
+
+Then you should register your media collecions and conversions.<br />
+The example below creates `cover` media for blog post with `thumbnail` and `small` image.
+
+```php
+public function registerMediaCollections(): void
+{
+    $this
+        ->addMediaCollection('cover')
+        ->singleFile()
+        ->registerMediaConversions(function (Media $media) {
+            $this
+                ->addMediaConversion('thumb')
+                ->fit(Fit::Crop, 150, 150)
+                ->nonQueued();
+
+            $this
+                ->addMediaConversion('small')
+                ->width(640)
+                ->nonQueued();
+        });
+}
+```
+
+Then you should upload the image in your Controller or Service/Action.<br />
+Method `uploadImage` is defined in the trait `HasMediaUploads` where you can check it's definition.
+
+It accepts three parameters:
+
+- `UploadedFile|string $fileOrPath`: uploaded image file or path to the image
+- `string $mediaCollection`: defaults to `cover`
+- `string $diskName`: storage disk, defaults to `public`; disks are defined in `config/filesystems.php`
+
+```php
+if ($request->image) {
+    $post->uploadImage($request->image);
+}
+```
+
+And finally, this is how you can get the uploaded image URL.<br />
+
+```php
+// Get collection cover with original size
+$post->getFirstMediaUrl('cover')
+
+// Get collection cover with conversion thumb
+$post->getFirstMediaUrl('cover', 'thumb')
+```
+
+For additional customization, please, visit the package [docs](https://spatie.be/docs/laravel-medialibrary/v11/introduction).
+
+## Server side rendering
+
+Docs coming soon...

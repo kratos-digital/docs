@@ -1,0 +1,123 @@
+---
+title: "Brand icons"
+description: "List of common brands and social media icons."
+---
+
+[Simple Icons](https://simpleicons.org/) are used to provide the SVG code for icons.
+
+## Available icons
+
+`resources/js/Components/ui/icons/index.ts`
+
+- **Bitbucket**
+- **Discord**
+- **Facebook**
+- **GitHub**
+- **GitLab**
+- **Google**
+- **Instagram**
+- **LinkedIn**
+- **Pinterest**
+- **Reddit**
+- **Slack**
+- **Telegram**
+- **TikTok**
+- **WhatsApp**
+- **X**
+- **YouTube**
+
+## How to use it?
+
+```javascript
+import { Facebook, Instagram, LinkedIn } from "@/Components/ui/icons";
+```
+
+<CodeGroup>
+
+```javascript Facebook
+<Button
+  as="a"
+  href="#facebook"
+  rel="noopener noreferrer nofollow"
+  target="_blank"
+  variant="ghost"
+  size="icon"
+>
+  <Facebook />
+</Button>
+```
+
+```javascript Instagram
+<Button
+  as="a"
+  href="#instagram"
+  rel="noopener noreferrer nofollow"
+  target="_blank"
+  variant="ghost"
+  size="icon"
+>
+  <Instagram />
+</Button>
+```
+
+```javascript LinkedIn
+<Button
+  as="a"
+  href="#linkedin"
+  rel="noopener noreferrer nofollow"
+  target="_blank"
+  variant="ghost"
+  size="icon"
+>
+  <LinkedIn />
+</Button>
+```
+
+</CodeGroup>
+
+Or you can use the approach used in `resources/js/Layouts/PageLayout.vue`:
+
+```javascript
+import { Facebook, Instagram, LinkedIn } from "@/Components/ui/icons";
+
+const socialLinks: NavLink[] = [
+  {
+    title: "Facebook",
+    url: "#facebook",
+    icon: Facebook,
+  },
+  {
+    title: "Instagram",
+    url: "#instagram",
+    icon: Instagram,
+  },
+  {
+    title: "LinkedIn",
+    url: "#linkedin",
+    icon: LinkedIn,
+  },
+];
+```
+
+```javascript
+<Button
+    v-for="social in socialLinks"
+    as="a"
+    :href="social.url"
+    rel="noopener noreferrer nofollow"
+    target="_blank"
+    variant="ghost"
+    size="icon"
+>
+    <component :is="social.icon" :title="social.title" />
+</Button>
+```
+
+## How to add new icon?
+
+1. Go to https://simpleicons.org/ and search for desired brand, for example _vue_.
+2. Download `SVG` file by clicking on **download** icon, or by clicking on **search** icon and then **Download SVG**
+3. Create new file in `resources/js/Components/ui/icons/` folder named `BrandName.vue` (the best way is to duplicate one of the existing icons and just rename it)
+4. Open your new icon component and update the `title` and `path d` attribute
+5. Open `index.ts` file and export your new icon in same way as other icons
+6. Import and use component as shown [here](/components/extras/icons#how-to-use-it)

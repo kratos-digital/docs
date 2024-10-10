@@ -1,0 +1,87 @@
+---
+title: "Settings"
+description: "Payment settings and configuration."
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Intro
+
+<Info>
+  Default and currently only supported payment provider is **Stripe**.
+</Info>
+
+To set payment provider other than Stripe, define `PAYMENT_PROVIDER` variable in your `.env`.
+
+## One-time payments
+
+To use one-time payments set `PAYMENT_PRODUCTS_TYPE` to `single` in your `.env`.<br />
+
+## Subscriptions
+
+To use one-time payments set `PAYMENT_PRODUCTS_TYPE` to `recurring` in your `.env`.<br />
+This is the default setup.
+
+### Trial
+
+To enable trial periods set `PAYMENT_TRIAL_DAYS` to number of days.
+
+## Highlighted plan
+
+If you want to highlight specific plan, for example the best value plan, set `PAYMENT_HIGHLIGHTED_PRODUCT_ID` to the ID of the plan.
+
+## Cache
+
+Some payment data is cached for limited time of 24h. To update this amount set `PAYMENT_CACHE_DURATION` to desired time in **milliseconds**.
+
+## Authenticated payments
+
+When using one-time payments you can allow your users to buy products without registering their account.
+
+To enable this set `PAYMENT_MUST_BE_AUTHENTICATED` to `false`.
+
+Subscriptions require user authentication.
+
+## Taxes
+
+To enable tax calculation on checkout set `PAYMENT_CALCULATE_TAXES` to `true`.
+
+### Tax IDs
+
+To disable customer tax IDs on checkout set `PAYMENT_COLLECT_TAX_IDS` to `false`.<br />
+It is enabled by default.
+
+## Discounts
+
+To disable discount and coupons on checkout set `PAYMENT_ALLOW_DISCOUNTS` to `false`.<br />
+It is enabled by default.
+
+### Coupons
+
+To apply coupons to specific products, set `PAYMENT_COUPONS` value in format `product_id:coupon_code`.
+
+A coupon contains information about a percent-off or amount-off discount you might want to apply to a product.
+
+<Warning>Applied coupons cannot be removed during checkout.</Warning>
+
+To create a coupon go to [Stripe dashboard](https://dashboard.stripe.com/), click **Product catalog** in sidebar, and then click **Coupons** in subnav.
+
+### Promotion codes
+
+To apply promotion codes to specific products, set `PAYMENT_PROMO_CODES` value in format `product_id:promo_id`.
+
+A Promotion Code represents a customer-redeemable code for a coupon.
+
+<Info>
+  To apply a promo code, you must use ID (*API ID*), not code (*Promotion
+  code*).
+</Info>
+
+<Info>Customers must apply the code (*30*), not ID (*promo_1Q5p...*).</Info>
+
+<Frame>
+  <img src="/images/promo-codes.jpg" style={{ borderRadius: "0.5rem" }} />
+</Frame>
+
+To create a promotion code go to [Stripe dashboard](https://dashboard.stripe.com/), click **Product catalog** in sidebar, then click **Coupons** in subnav, then create or select an existing coupon.<br />
+On coupon page, look for Promotion Codes section and create new promotion codes for this coupon.

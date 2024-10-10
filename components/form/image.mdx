@@ -1,0 +1,103 @@
+---
+title: "Image upload and preview"
+---
+
+`resources/js/Components/Form/ImageUpload.vue`
+
+## Props
+
+Use props to style the look of the component:
+
+### Image
+
+`image?: string`
+
+Uploaded image or placeholder.
+
+`accept?: string`
+
+Input file `accept` attribute. Defaults to `image/*`.
+
+`isIcon?: boolean`
+
+Set as `true` for icon uploads.<br />
+For icon uploads default accept value is `image/png,image/svg+xml`
+
+### Button label
+
+`btnLabel?: string`
+
+Label for image select button. Defaults to "Upload image".
+
+### ID
+
+`id?: HTMLAttributes["id"]`
+
+ID of the file input.
+
+### Class
+
+`class?: HTMLAttributes["class"]`
+
+Style the wrapper.
+
+## On file change event
+
+Full docs coming soon...
+
+## Example
+
+You can render default component or customized it using the Vue slots.
+
+### Default
+
+<CodeGroup>
+
+```javascript Image
+// form.image is prop in Inertia useForm()
+// post?.image is uploaded image of the post (when updating)
+<ImageUpload
+    @changed="(file: File) => (form.image = file)"
+    :image="post?.image"
+/>
+```
+
+```javascript Icon
+// form.image is prop in Inertia useForm()
+// post?.image is uploaded image of the post (when updating)
+<ImageUpload
+    @changed="(file: File) => (form.image = file)"
+    :image="post?.image"
+    is-icon
+/>
+```
+
+</CodeGroup>
+
+### Slots
+
+```javascript
+// form.image is prop in Inertia useForm()
+// input in trigger slot is HTMLInputElement reference
+// image in preview slot is selected file base64 string
+// placeholder is default image placeholder when image is null
+<ImageUpload
+    class="flex items-center gap-x-2"
+    @changed="(file: File) => form.image = file"
+>
+    <template v-slot:trigger="{ input }">
+        <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            @click="input?.click()"
+        >
+            {{ $t("Upload avatar") }}
+        </Button>
+    </template>
+
+    <template v-slot:preview="{ image, placeholder }">
+        <img class="size-12 rounded-full object-cover" :src="image || placeholder" />
+    </template>
+</ImageUpload>
+```

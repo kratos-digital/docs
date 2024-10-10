@@ -1,0 +1,33 @@
+---
+title: "FAQ"
+description: "Create global FAQs for your application."
+---
+
+## Intro
+
+By default there are 10 randomly generated FAQ posts for Demo purposes. You should update them in `FaqSeeder.php` or disable the seeder by removing it from `DatabaseSeeder.php`.
+
+When creating FAQs via seeder, you need to provide those attributes:
+
+- **title**: Question.
+- **content**: Answer.
+- **created_at**: Optional. Defaults to current datetime.
+- **updated_at**: Optional. Defaults to current datetime.
+
+```php
+Faq::create([
+    'title' => 'Question 1?',
+    'content' => 'Answer 1...',
+]);
+
+Faq::create([
+    'title' => 'Question 2?',
+    'content' => 'Answer 2...',
+]);
+```
+
+## Admin
+
+Administrators with correct permissions can manage FAQ via admin panel.
+
+Full docs coming soon...

@@ -1,0 +1,49 @@
+---
+title: "Blog"
+---
+
+## Introduction
+
+Docs coming soon...
+
+## Enable/disable module
+
+### Terminal
+
+```bash
+php artisan module:enable Blog
+```
+
+```bash
+php artisan module:disable Blog
+```
+
+### Manually
+
+`modules_statuses.json`
+
+Set Blog to `true` (enabled) or `false` (disabled)
+
+## Style
+
+To update hover style, search for `group-hover/article` and update it as you wish.
+
+### Background on hover
+
+By default, blog post cards have subtle background color beneath the card's content on hover.
+
+Image coming soon...
+
+To remove this background go to `resources/js/Components/Article/ArticleCard.vue` and remove all classes with `before:` keyword.
+
+### Background on single page
+
+Blog post page has included subtle background color benath the post header.
+
+Go to `modules/Blog/resources/js/Pages/Show.vue` and update it as you wish. If you want to remove the background just delete the entire class on `SectionWrapper`.
+
+## Share post
+
+Every blog post has included **share** functionality, where you can copy the post link or share it on **X**, **Facebook** and **LinkedIn**, by default.
+
+To remove sharing or update available platforms, go to `modules/Blog/resources/js/Pages/Show.vue` and update `SocialMediaShare enum` and `shareOnSocialMedia` function.

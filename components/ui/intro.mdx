@@ -1,0 +1,107 @@
+---
+title: "Components"
+---
+
+`/resources/js/Components/ui`
+
+Shadcn-vue components: https://www.shadcn-vue.com/docs/components
+
+## Animations
+
+Some components have included animations on scroll, hover or click, such as featured image, icons in feature cards, numbers in stats, testimonials, etc.
+
+If you want to disable animations globally, set `VITE_ANIMATIONS` in `.env` file to empty.
+
+You can also pass `animate` property to each of those components to enable or disable animations per component. You can find more info in docs for each of those components.
+
+## Blurred backdrop
+
+Dialogs, sheets and drawers have backdrop that blurs the content beneath it.
+
+If you want to use only backdrop background color, without the blur, set `VITE_BACKDROP_BLUR` in `.env` file to `backdrop-blur-none`.
+
+If you want to use different blur value, set `VITE_BACKDROP_BLUR` in `.env` file to one of available [classes](https://tailwindcss.com/docs/backdrop-blur). Default value is `backdrop-blur-sm`.
+
+If your new class is not working, make sure to safelist the class in `tailwind.config.js` under `safelist` array.
+
+## Tooltips
+
+Shadcn-vue Tooltip component: https://www.shadcn-vue.com/docs/components/tooltip.html
+
+To render tooltip just follow the [docs](https://www.shadcn-vue.com/docs/components/tooltip.html#usage) or search for `ToolTipProvider` in the source code.
+
+There is a minor `bug` when using tooltips:
+
+If you have an element with tooltip inside your `popover`, `dialog`, `dropdown` or any similar element with **open and close states**, the first tooltip will be rendered when you open it.
+
+Use this code to prevent tooltip auto-show (check [radix-vue docs](https://www.radix-vue.com/overview/getting-started.html) for exact names)
+
+```javascript
+<PopoverContent @open-auto-focus="(e: Event) => e.preventDefault()">
+</PopoverContent>
+```
+
+You can find such example in `modules/Roadmap/resources/js/Pages/Show.vue`.
+
+## Dialogs
+
+In some cases we are required to manipulate dialog states.
+
+To make it seemless there is composable `resources/js/composable/useDialog.ts` which you can use to control dialog states.
+
+<Info>
+  It can be used with any component with open/close state such as `Dialog`,
+  `AlertDialog`, `Popover`, `Sheet`, etc.
+</Info>
+
+### How to use it?
+
+Import the composable:
+
+```javascript
+import { dialogState } from "@/composable/useDialog";
+
+const { isOpen, openDialog, closeDialog } = dialogState();
+```
+
+Or just import the one you will use:
+
+```javascript
+import { dialogState } from "@/composable/useDialog";
+
+const { isOpen } = dialogState();
+```
+
+`isOpen` presents dialog state which tells you if dialog is open (_true_) or closed (_false_).
+
+`openDialog` and `closeDialog` are functions to open or close the dialog.
+
+Then you can use it to set the dialog's v-model:
+
+```javascript
+<Dialog v-model:open="isOpen"></Dialog>
+```
+
+Or to close the dialog on form success:
+
+```javascript
+const submit = () => {
+  form.post(route("do-something"), {
+    preserveScroll: true,
+    onSuccess: () => {
+      closeDialog();
+      form.reset();
+    },
+  });
+};
+```
+
+You can also use it when you have multiple dialogs on one page:
+
+```javascript
+const { isOpen: isOpenFoo, closeDialog: closeDialogFoo } = dialogState();
+const { isOpen: isOpenBar, closeDialog: closeDialogBar } = dialogState();
+
+<Dialog v-model:open="isOpenFoo">Foo dialog content</Dialog>
+<Dialog v-model:open="isOpenBar">Bar dialog content</Dialog>
+```

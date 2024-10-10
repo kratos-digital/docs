@@ -1,0 +1,66 @@
+---
+title: "Roadmap"
+description: "Public list of features."
+---
+
+## Introduction
+
+Display the list of user-requested features, approved, in progress, resolved and rejected ones.
+
+Users can also upvote and/or downvote features and add comments to features.
+
+## Enable/disable module
+
+Each module can be enabled or disabled in your application, without affecting other parts of your code.
+
+### Terminal
+
+```bash
+php artisan module:enable Roadmap
+```
+
+```bash
+php artisan module:disable Roadmap
+```
+
+### Manually
+
+`modules_statuses.json`
+
+Set Roadmap to `true` (enabled) or `false` (disabled).
+
+## Configuration
+
+Open this file `modules/Roadmap/config/config.php` and update Roadmap settings to fit your application.
+
+### Author can vote
+
+Default is `true`
+
+Set `author_can_vote` to `true` to allow authors to upvote their own features.
+
+Set `author_can_vote` to `false` to prevent authors to upvote their own features.
+
+### Downvotes
+
+Default is `true`
+
+Set `downvotes_enabled` to `true` to enable downvotes.
+
+Set `downvotes_enabled` to `false` to disable downvotes.
+
+### Authenticated
+
+Default is `true`
+
+Set `must_be_authenticated` to `true` to allow creation of new features only for authenticated users.
+
+Set `must_be_authenticated` to `false` to allow guests (non-authenticated users) to create new features.
+
+### Subscribed
+
+Default is `false`
+
+Set `must_be_subscribed` to `true` to allow creation of new features and comments only for subscribed users.
+
+When `true` the `must_be_authenticated` value will be ignored since subscribed users must be authenticated to get correct data.

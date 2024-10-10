@@ -1,0 +1,83 @@
+---
+title: "Form inputs"
+---
+
+## Form field
+
+`resources/js/Components/Form/FormField.vue`
+
+Use to group labels, inputs, error messages and notes.
+
+```javascript
+<FormField>
+    <Label for="title">{{ $t("Title") }}</Label>
+    <Input
+        id="title"
+        type="text"
+        v-model="form.title"
+        :placeholder="$t('Blog Post Title')"
+        required
+        autofocus
+    />
+    <ErrorMessage :message="form.errors.title" />
+    <Note :message="$t('Title for your blog post.')" />
+</FormField>
+```
+
+## Text input
+
+https://www.shadcn-vue.com/docs/components/input.html
+
+## Textarea
+
+https://www.shadcn-vue.com/docs/components/textarea.html
+
+## Checkbox
+
+https://www.shadcn-vue.com/docs/components/checkbox.html
+
+## Radio group
+
+https://www.shadcn-vue.com/docs/components/radio-group.html
+
+## Switch
+
+https://www.shadcn-vue.com/docs/components/switch.html
+
+## Select
+
+https://www.shadcn-vue.com/docs/components/select.html
+
+Component `Select.vue` is updated with additional `resettable` prop to allow value reset when selected (and when select is not required).
+
+## Tags input
+
+https://www.shadcn-vue.com/docs/components/tags-input.html
+
+## Date picker
+
+https://www.shadcn-vue.com/docs/components/date-picker.html
+
+## Range calendar
+
+https://www.shadcn-vue.com/docs/components/range-calendar.html
+
+## Number field
+
+https://www.shadcn-vue.com/docs/components/number-field.html
+
+## PIN input
+
+https://www.shadcn-vue.com/docs/components/pin-input.html
+
+## Error message
+
+`resources/js/Components/Form/ErrorMessage.vue`
+
+Show validation errors thrown by Laravel validator.
+
+## Note
+
+`resources/js/Components/Form/Note.vue`
+
+Display additional description of the input field.

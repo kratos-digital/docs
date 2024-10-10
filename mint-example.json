@@ -25,11 +25,39 @@
   "topbar": {
     "style": "default"
   },
-  "topbarLinks": [],
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:hello@butchr.com"
+    }
+  ],
   "topbarCtaButton": {
     "name": "Dashboard",
     "url": "https://dashboard.mintlify.com"
   },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open-cover",
+      "url": "https://mintlify.com/docs"
+    },
+    {
+      "name": "Community",
+      "icon": "slack",
+      "url": "https://mintlify.com/community"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://mintlify.com/blog"
+    }
+  ],
   "navigation": [
     {
       "group": "Get Started",
@@ -38,7 +66,6 @@
         "quickstart",
         "development",
         "configuration",
-        "emails",
         "styling"
       ]
     },
@@ -77,48 +104,15 @@
         {
           "group": "Form",
           "pages": [
-            "components/form/inputs",
             "components/form/editor",
-            "components/form/image",
-            "components/form/button"
+            "components/form/select",
+            "components/form/button",
+            "components/form/image"
           ]
         },
         "components/wrappers",
         "components/heading",
-        "components/hero",
-        "components/benefits",
-        "components/features",
-        "components/logo-blocks",
-        "components/faq",
-        "components/testimonials",
-        "components/posts",
-        "components/stats",
-        "components/cta",
-        "components/newsletter",
-        {
-          "group": "Pricing",
-          "pages": [
-            "components/pricing/intro",
-            "components/pricing/default",
-            "components/pricing/single",
-            "components/pricing/dual",
-            "components/pricing/features"
-          ]
-        },
-        {
-          "group": "Extras",
-          "pages": [
-            "components/extras/media",
-            "components/article",
-            "components/dl",
-            "components/extras/auth-modal",
-            "components/extras/stars-rating",
-            "components/extras/avatar-groups",
-            "components/extras/made-with",
-            "components/extras/pagination",
-            "components/extras/icons"
-          ]
-        }
+        "components/hero"
       ]
     },
     {
@@ -146,11 +140,10 @@
       "group": "Other Features",
       "pages": [
         "features/helpers",
-        "features/coming-soon",
         "features/pages",
         "features/faq",
         "features/seo",
-        "features/social-links",
+        "features/coming-soon",
         "features/cookies",
         "features/grecaptcha",
         "features/translations",
@@ -165,7 +158,20 @@
         "deployment/laravel-forge",
         "deployment/laravel-cloud",
         "deployment/ploi",
-        "deployment/deployer"
+        "deployment/netlify",
+        "deployment/php-deployer"
+      ]
+    },
+    {
+      "group": "API Documentation",
+      "pages": ["api-reference/introduction"]
+    },
+    {
+      "group": "Endpoint Examples",
+      "pages": [
+        "api-reference/endpoint/get",
+        "api-reference/endpoint/create",
+        "api-reference/endpoint/delete"
       ]
     }
   ],

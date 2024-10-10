@@ -1,0 +1,33 @@
+---
+title: "Google reCAPTCHA"
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Setup
+
+With **{appName}** you can select `v2 checkbox`, `v2 invisible` and `v3` reCAPTCHA.
+
+Go to your `.env` file and update the keys for versions you want to use.
+
+```bash
+# v2 checkbox
+RECAPTCHA_CHECKBOX_SITE_KEY=
+RECAPTCHA_CHECKBOX_SECRET_KEY=
+# v2 invisible
+RECAPTCHA_INVISIBLE_SITE_KEY=
+RECAPTCHA_INVISIBLE_SECRET_KEY=
+# v3
+RECAPTCHA_V3_SITE_KEY=
+RECAPTCHA_V3_SECRET_KEY=
+```
+
+This is disabled by default, so to enable it set `RECAPTCHA_ENABLED` to `true` in your `.env`.
+
+Default version is set to `v3` (reCAPTCHA v3). To update default version set `RECAPTCHA_VERSION` to `checkbox` (I'm not a robot checkbox) or `invisible` (Invisible reCAPTCHA v2 badge) in your `.env`.
+
+Passing score for `v3` is set to `0.5` by default. To update score set `RECAPTCHA_V3_SCORE` to desired value in your `.env`.
+
+## How to use it?
+
+Full docs coming soon...
