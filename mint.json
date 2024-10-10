@@ -23,7 +23,7 @@
     "family": "Figtree"
   },
   "feedback": {
-    "thumbsRating": true
+    "thumbsRating": false
   },
   "topbar": {
     "style": "default"
