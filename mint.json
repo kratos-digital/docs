@@ -48,13 +48,17 @@
     {
       "group": "Modules",
       "pages": [
+        "modules/intro",
         "modules/datatable",
         "modules/blog",
         "modules/helpdesk",
         "modules/testimonials",
         "modules/roadmap",
         "modules/changelog",
-        "modules/activity-log"
+        "modules/activity-log",
+        "modules/coming-soon",
+        "modules/pages",
+        "modules/faq"
       ]
     },
     {
@@ -149,9 +153,6 @@
       "group": "Other Features",
       "pages": [
         "features/helpers",
-        "features/coming-soon",
-        "features/pages",
-        "features/faq",
         "features/seo",
         "features/social-links",
         "features/cookies",

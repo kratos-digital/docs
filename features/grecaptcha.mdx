@@ -30,4 +30,85 @@ Passing score for `v3` is set to `0.5` by default. To update score set `RECAPTCH
 
 ## How to use it?
 
-Full docs coming soon...
+Go to reCAPTCHA dashboard https://www.google.com/recaptcha/admin/create
+
+Copy and paste generated keys to `.env` file.
+
+1. Import the component in pages where you will use it
+
+```javascript
+import Recaptcha from "@/Components/Form/Recaptcha.vue";
+
+const recaptcha = ref<{
+  execute: () => Promise<string>;
+} | null>(null);
+
+const form = useForm({
+  email: "",
+  password: "",
+  remember: true,
+  // Add this to your form
+  recaptcha: "",
+});
+```
+
+2. Include it in your template
+
+<CodeGroup>
+
+```javascript v3
+<Recaptcha ref="recaptcha" />
+
+// Also add component to render the error message if validation fails
+<ErrorMessage :message="form.errors.recaptcha" />
+```
+
+```javascript v2
+<Recaptcha ref="recaptcha" @verify="onVerify" />
+
+// Also add component to render the error message if validation fails
+<ErrorMessage :message="form.errors.recaptcha" />
+
+// Also define the onVerify method in script setup, for example:
+const onVerify = (token: string) => {
+  form.recaptcha = token;
+};
+```
+
+</CodeGroup>
+
+3. For `v3`, do this to get valid token
+
+```javascript
+const submit = async () => {
+  // Custom trigger form processing
+  form.processing = true;
+
+  if (recaptcha.value) {
+    form.recaptcha = await recaptcha.value.execute();
+  }
+
+  // Trigger the form
+  form.post(route("some-post-route"));
+};
+```
+
+4. In your form request or validator, validate the recaptcha token
+
+```php
+use App\Rules\Recaptcha;
+
+[
+    'recaptcha' => [new Recaptcha],
+    // other rules go here
+]
+```
+
+Or set the rule like this (recommended) to exclude the field from `validate` and `validated` methods:
+
+```php
+[
+    'recaptcha' => ['exclude', new Recaptcha],
+    // other rules go here
+]
+```
