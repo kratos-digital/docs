@@ -2,4 +2,31 @@
 title: "Default pricing tables"
 ---
 
-Docs coming soon...
+`resources/js/Components/Sections/Pricing/PricingDefault.vue`
+
+This component accepts one props `animate` which indicates if card should have animation on interaction. The default value of this prop will be set according to you global settings under `VITE_ANIMATIONS`.
+
+You can also set the button position above (top) or below (bottom) features list by updating this prop:
+
+```javascript
+const btnPosition: "top" | "bottom" = "bottom";
+```
+
+Payment cards are rendered via component `resources/js/Components/Sections/Pricing/PricingCardContent.vue` which accepts next props:
+
+- **id**: Product ID
+- **name**: Product name
+- **prices**: Price object for orders or price list for subscriptions
+- **description**: Product description
+- **features**: Feature list included with product
+- **doubleCheckFeature**: Used to reuse features from previous product (Everything in Starter, plus)
+- **highlighted**: True to highlight the product (for popular or best-value)
+- **btnLabel**: Label of the button, defaults to "Get started"
+- **btnPosition**: Button position (as explained above)
+- **headerClass**: Class list to style the header
+- **contentClass**: Class list to style the header
+- **footerClass**: Class list to style the footer
+- **priceClass**: Class list to style the price
+- **descriptionClass**: Class list to style the description
+- **featuresClass**: Class list to style the features
+- **featureListClass**: Class list to style the feature list item

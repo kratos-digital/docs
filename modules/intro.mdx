@@ -8,6 +8,12 @@ import { appName } from "/snippets/vars.mdx";
 
 Some modules are toggleable, allowing you to customize your application to fit your needs.
 
+<Warning>
+  If you want to enable modules which were never enabled before, make sure to
+  run their migrations and seeders too. For more details, visit the
+  documentation page of those modules.
+</Warning>
+
 <CardGroup cols={2}>
   <Card title="DataTable" href="/modules/datatable">
     Manage and display your data effortlessly with sorting, filtering, and
@@ -49,3 +55,15 @@ Some modules are toggleable, allowing you to customize your application to fit y
     Easily manage common questions to enhance user support and satisfaction.
   </Card>
 </CardGroup>
+
+## Migrations
+
+To override tables for database, you can either update original migration file in `modules/Blog/database/migrations` folder or publish migrations to your application's `migrations` folder.
+
+It's recommended to publish them if you need to make any updates. If you will use the default database, you don't need to do anything, other than publishing the module and running migrate command.
+
+```bash
+php artisan module:publish-migration
+```
+
+This command will trigger a prompt to select which model's migrations you wish to publish. You can select all or specify which ones. You can also run this command for each module, but for this check the docs for those specific modules.

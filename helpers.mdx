@@ -1,0 +1,225 @@
+---
+title: "Helpers"
+description: "Custom global commands and functions to make your life easier."
+---
+
+import { appName } from "/snippets/vars.mdx";
+
+## Artisan commands
+
+### Super Admin
+
+In most cases, you will define super admins in your seed files.
+
+But sometimes, you will be required to add new super admin while in production. You can do it by running this command `php artisan app:admin` where you will be requested to enter all the required info for your new super admin.
+
+### Route list
+
+There is built-in command to list all your routes `php artisan route:list`, but there is no quick way to list all your public-facing pages.
+
+You can use this custom command `php artisan app:routes` which will output route name and page URI for each public page. Public pages are all GET routes not protected with `auth` middleware.
+
+Idea for this command came from neccessity to prepare SEO data for each public-facing page without going manually through routes and controllers to find them.
+
+### Sync payment products
+
+Run `php artisan payments:sync-products` when you want to update payment provider's products and prices with your pricing tables defined in `config/payments.php`.
+
+<Info>This work only with **Stripe** payment provider at the moment.</Info>
+
+Read more about it under [Payments](/payments/settings).
+
+### Generate sitemap
+
+Run `sitemap:generate` to generate sitemap `public/sitemap.xml` for your pages.
+
+[How to configure your sitemap?](/configuration#sitemap)
+
+## Helper functions
+
+**{appName}** uses custom helper functions `app/helpers.php` to improve your quality of development.
+
+### module_enabled()
+
+Check if module is enabled.
+
+```php
+if (module_enabled('Blog')) {
+    dd('Blog is enabled');
+} else {
+    dd('Blog is disabled');
+}
+```
+
+### email_verification_enabled()
+
+Check if User must verify email upon registration.
+
+```php
+if (email_verification_enabled()) {
+    dd('Email verification is required');
+}
+```
+
+### convert_keys_to_camel_case()
+
+Convert all PHP array keys such as `foo_bar` to `fooBar` to follow Vue naming convention.
+
+```php
+$data = [
+    'first_name' => 'Tony',
+    'last_name' => 'Stark',
+    'nickname' => 'Iron Man',
+];
+
+$data = convert_keys_to_camel_case($data);
+
+// $data content after conversion
+// [
+//     'firstName' => 'Tony',
+//     'lastName' => 'Stark',
+//     'nickname' => 'Iron Man',
+// ];
+```
+
+### get_country_list()
+
+Get list of all countries as array using [REST Countries](https://restcountries.com/) API.
+
+```php
+$countries = get_country_list();
+
+// [
+//     'hr' => [
+//         'name' => 'Croatia',
+//         'flag' => 'hr',
+//     ],
+//     'us' => [
+//         'name' => 'United States of America',
+//         'flag' => 'us',
+//     ],
+// ];
+
+$countries = get_country_list('cca2');
+
+// ['hr', 'us']
+
+$countries = get_country_list('name.common');
+
+// ['Croatia', 'United States of America']
+```
+
+### get_country_name()
+
+Get country name from code.
+
+```php
+get_country_name('HR'); // Croatia
+get_country_name('US'); // United States
+```
+
+### get_timezones()
+
+Get list of all available timezones as array.
+
+```php
+$timezones = get_timezones();
+
+// [...]
+
+$timezonesForCroatia = get_timezones('HR');
+
+// ['Europe/Zagreb']
+
+$timezonesForSpain = get_timezones('US');
+
+// ['America/Adak', 'America/Anchorage', ..., 'America/Yakutat', 'Pacific/Honolulu']
+```
+
+### format_date()
+
+Format date to desired output. It accepts three parameters: Carbon date instance, true/false to show time (true by default) and true/false to show pretty date (false by default).
+
+You can customize your format by updating `date_format`, `time_format`, `pretty_date_format` and `pretty_time_format` in `config/app.php` configuration file.
+
+By default, pretty dates are usually used in user-facing pages, while the default date is used in data tables.
+
+```php
+format_date(now()); // 2024-11-16 01:53
+format_date(now(), false); // 2024-11-16
+format_date(date: now(), pretty: true); // Nov 16th, 2024 at 01:54
+format_date(now(), false, true); // Nov 16th, 2024
+```
+
+### diff_for_humans()
+
+Convert Carbon date to human-readable format like _just now_, _2 hours ago_, _5 months ago_, etc.
+
+This is slightly improved version of built-in Carbon function `diffForHumans`, which shows _x seconds ago_ for actions made just now.
+
+```php
+// Using Carbon
+now()->diffForHumans() // 0 seconds ago
+now()->sub('10 seconds')->diffForHumans() // 10 seconds ago
+now()->sub('2 hours')->diffForHumans() // 2 hours ago
+now()->sub('2 weeks')->diffForHumans() // 2 weeks ago
+now()->add('5 minutes 30 seconds')->diffForHumans() // 5 minutes from now
+
+// Using helper
+diff_for_humans(now()) // just now
+diff_for_humans(now()->sub('10 seconds')) // just now
+diff_for_humans(now()->sub('2 hours')) // 2 hours ago
+diff_for_humans(now()->sub('2 weeks')) // 2 weeks ago
+diff_for_humans(now()->add('5 minutes 30 seconds')) // 5 minutes from now
+```
+
+### calculate_reading_time()
+
+Calculate reading time (for blog post content) based on number of words.<br />
+This is already implemented with Blog module.
+
+```php
+calculate_reading_time('Lots of words... 10 minutes read...'); // 10
+```
+
+### get_previous_route()
+
+Get previous route from request. You can pass the request or it will use the current request. This is used to determine where user should be redirected after login/logout when using dynamic redirection. It can be also used for custom logging or other features where you need to track the routing.
+
+```php
+get_previous_route();
+get_previous_route($request);
+```
+
+### get_excerpt()
+
+Get a shortened text from longer content, stripped from any HTML tags. This is useful for displaying previews of content.
+
+```php
+get_excerpt('Some long text...'); // 160 characters
+get_excerpt('Some long text...', 240); // 240 characters
+```
+
+## Acronym
+
+**{appName}** comes with custom `Str` helper method to create acronyms.
+
+### How to use it?
+
+Method accepts 3 arguments:
+
+- `string $string`
+- `string $delimiter = ''`
+- `int $limit = null`
+
+```php
+Str::acronym('Tony Stark'); // TS
+Str::acronym('Tony Stark', '.'); // T.S.
+Str::acronym('James Earl Jones'); // JEJ
+Str::acronym(value: 'Jean-Claude Van Damme', limit: 2); // JC
+```
+
+<Info>
+  Source code inspired by
+  [koenhendriks](https://github.com/koenhendriks/laravel-str-acronym).
+</Info>

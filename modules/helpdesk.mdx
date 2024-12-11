@@ -5,11 +5,11 @@ description: "Support tickets for your customers."
 
 ## Introduction
 
-Docs coming soon...
+Default Helpdesk module comes with tickets, comments (per ticket) and support level. You can update support levels in this enum `modules/Helpdesk/app/Enums/HelpdeskSupportLevel.php`. You can also update enums for ticket status (open, in progress, resolved) and ticket type (general questions, tech support, billing inquiry, bug report).
 
 ## Enable/disable module
 
-### Terminal
+### Via terminal
 
 ```bash
 php artisan module:enable Helpdesk
@@ -24,3 +24,81 @@ php artisan module:disable Helpdesk
 `modules_statuses.json`
 
 Set Helpdesk to `true` (enabled) or `false` (disabled)
+
+## Override files
+
+To override tables for database, you can either update original migration file in `modules/Helpdesk/database/migrations` folder or publish migrations to your application's `migrations` folder.
+
+```bash
+php artisan module:publish-migration helpdesk
+```
+
+To override templates, publish them using this command. Files will be copied to `resources/js/Modules/Helpdesk` folder where you can update them as you wish.
+
+```bash
+php artisan app:publish-module-view helpdesk
+```
+
+Upon calling this command you will be prompted to copy files for admin area, which is disabled by default.
+
+<Warning>
+  It's recommended to publish files if you need to update anything.
+</Warning>
+
+## Support level for Users
+
+By default, all registered users will be set to expired. Users with expired support level are not allowed to create new tickets or comment on existing tickets.
+
+If you plan to use this module it's recommended to set support level for your users upon successful subscription, order, registration or some other event in your application.
+
+User model implements `modules/Helpdesk/app/Traits/HasSupport.php` trait so you can use this line of code to assign desired support level to the user:
+
+```php
+use Modules\Helpdesk\Enums\HelpdeskSupportLevel;
+
+$user->setSupportLevel(HelpdeskSupportLevel::Premium);
+```
+
+<Note>
+  If you updated the `HelpdeskSupportLevel` enum, update the `HasSupport` trait
+  accordingly to avoid bugs.
+</Note>
+
+### Get current support level
+
+```php
+$level = $user->support_level;
+```
+
+### Query users with support
+
+```php
+// Get all users with active support
+User::hasSupport()->get();
+
+// Count all users with active support
+User::hasSupport()->count();
+
+// Get all users with expired support
+User::hasNoSupport()->get();
+```
+
+### Check if user has active support
+
+```php
+if ($user->hasAnySupport()) {
+    // Has active support
+}
+
+if (! $user->hasAnySupport()) {
+    // No support
+}
+```
+
+### Check if user has premium support
+
+```php
+if ($user->hasPremiumSupport()) {
+    // Has premium support
+}
+```

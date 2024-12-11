@@ -30,8 +30,8 @@
   },
   "topbarLinks": [],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Go to app",
+    "url": "https://butchr.dev"
   },
   "navigation": [
     {
@@ -42,7 +42,8 @@
         "development",
         "configuration",
         "emails",
-        "styling"
+        "styling",
+        "helpers"
       ]
     },
     {
@@ -118,6 +119,7 @@
             "components/extras/media",
             "components/article",
             "components/dl",
+            "components/extras/subtitle",
             "components/extras/auth-modal",
             "components/extras/stars-rating",
             "components/extras/avatar-groups",
@@ -152,7 +154,6 @@
     {
       "group": "Other Features",
       "pages": [
-        "features/helpers",
         "features/seo",
         "features/social-links",
         "features/cookies",

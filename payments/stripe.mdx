@@ -2,7 +2,7 @@
 title: "Stripe"
 ---
 
-[Laravel Cashier (Stripe)](https://laravel.com/docs/11.x/billing) is package used to enable Stripe payments.
+[Laravel Cashier (Stripe)](https://laravel.com/docs/11.x/billing) is the base package used to enable Stripe payments with extra customization.
 
 ## Intro
 
@@ -21,7 +21,9 @@ Due the limitations of Laravel Cashier for Stripe and Paddle to work with each o
 
 ## Create Stripe account
 
-Create Stripe account and add keys... Docs coming soon...
+Create Stripe account and add keys...
+
+Docs coming soon...
 
 ## Migrations
 
@@ -31,56 +33,82 @@ Docs coming soon...
 
 Go to `config/payments.php` and setup your products and plans.
 
+You can update product name, description and features.
+
 <Warning>
-  Stripe does not allow updating the price amount, currency or interval.
+  It is not recommended to update product IDs of existing products and prices.
 </Warning>
 
-If you need to change any of those fields then it's best to create a new price and delete the old price or set it as inactive (if it has been used already).
+<Warning>
+  Stripe does not allow updating the price amount, currency or interval for
+  existing prices.
+</Warning>
 
-If you update any of those fields in `payments.php` and run the sync command, it will handle all of this for you.<br />
-Regardless of that you should always check the Stripe dashboard to make sure everything is setup correctly.
+If you want to update any of those fields (price, currency, interval) then just update them in the `payments` file and run the `sync` command. Command will create a new price (or use the archived one if parameters match), set it as default (if specified) and deactivate the old price. Upon update, it's recommended to manually delete any unused old prices. Sync command can't delete them due the Stripe API restrictions.
 
-You can update product name, description and features. It is not recommended to update product IDs.
+<Info>
+  Regardless of all the automatic tasks the `sync` command is doing, you should
+  always check the Stripe Dashboard to make sure everything is setup correctly.
+</Info>
 
 ### Sync products
 
-To sync Stripe products with the payments file go to your terminal and run this command:
+To sync Stripe products with the `payments` file go to your terminal and run this command:
 
 ```bash
 php artisan payments:sync-products
 ```
 
-Check the Stripe dashboard if everything is in order.
+This will create or update products defined in payments file with your Stripe Product catalog.
+
+If you want to handle your products and prices manually, then don't run this command.
+
+<Warning>
+  If you set the data manually, make sure to clear products cache when you
+  update them in Stripe.
+</Warning>
+
+### Get products
+
+To get products from Stripe, call this method:
+
+```php
+use App\Services\PaymentService;
+
+$products = PaymentService::getProducts();
+```
+
+All fetched products are cached to avoid unnecessary connections to the Stripe API. If you are using sync command to handle your products, it will automatically clear the cache on update. If you are creating your products manually then you should also clear the cache manually.
 
 ## Webhooks
 
 Stripe can notify your application of a variety of events via webhooks to sync data from Stripe with your database.
+
+<Info>It's highly recommended to enable webhooks.</Info>
 
 You can extend it as you wish following the [offical docs](https://laravel.com/docs/11.x/billing#handling-stripe-webhooks).
 
 ### Local
 
 1. To make local webhook URL publicly accessible install [Stripe CLI](https://docs.stripe.com/stripe-cli)
-2. Open your terminal and run stripe-cli: `stripe listen --forward-to localhost:8000/payment/webhook` or `stripe listen --forward-to http://butchr.test/payment/webhook`
-
-<Info>
-  Note that I am using `localhost:8000` instead of custom domain as first
-  example. This is because I couldn't run webhooks with custom domain, but you
-  can try and see if it works for you.
-</Info>
-
-3. Copy webhook secret provided by stripe-cli listener to `STRIPE_WEBHOOK_SECRET` in `.env`.
-4. CSRF should be disabled for webhooks (this is already included)
+2. Follow the provided steps to login to stripe via stripe-cli
+3. Once you're logged in, run this in your terminal: `stripe listen --forward-to localhost:8000/payment/webhook` or `stripe listen --forward-to https://butchr.test/payment/webhook`
+4. Copy webhook secret provided by stripe-cli listener to `STRIPE_WEBHOOK_SECRET` in `.env` file.
+5. CSRF should be disabled for webhooks (this is already included with boilerplate)
 
 #### Resend event for testing
 
-If you forgot to run webhooks locally or want to make some updates, you can resend events from terminal.
+If you forgot to run webhooks locally or want to make some updates and additional testing, you can resend events from terminal.
 
-You can find event IDs in Stripe dashboard.
+You can find event IDs in Stripe dashboard and then run this command.
 
 ```bash
 stripe events resend evt_1Q2YfaRujsEDTyysDc3I3DdS
 ```
+
+For subscriptions you should resend `customer.subscription.updated` event.
+
+For one-time payments you should resend `checkout.session.completed` event.
 
 ### Production
 
@@ -92,12 +120,19 @@ If you need to add new event handlers go to `app/Listeners/StripeEventListener.p
 
 ## Billing settings
 
-https://dashboard.stripe.com/settings/billing/automatic
+Go to [Billing settings](https://dashboard.stripe.com/settings/billing/automatic) in your Stripe Dashboard and setup the settings according to your requirements.
 
-Invoices (subscriptions): https://dashboard.stripe.com/test/settings/billing/invoice
+If your application is using recurring payments (subscriptions) you can use Stripe invoicing system. Go to [Invoicing settings](https://dashboard.stripe.com/test/settings/billing/invoice) and setup the settings according to your requirements.
+
+<Info>
+  For Single payments Stripe is not creating automatic invoices as for
+  subscriptions. You can use their Invoicing service (which could trigger some
+  additional fees), custom solution via webhooks or external service. More
+  details [here](/payments/invoices).
+</Info>
 
 ## Billing Portal
 
-Stripe offers an easy way to set up a [billing portal](https://dashboard.stripe.com/test/settings/billing/portal) so that your customer can manage their subscription, payment methods, and view their billing history.
+Stripe offers an easy way to set up a [billing portal](https://dashboard.stripe.com/test/settings/billing/portal) so that your customer can manage their subscription, payment methods and view their billing history.
 
-This is only included if you are using subscriptions (it has no specific use for single orders).
+This is only included if you are using subscriptions since it has no specific use for single orders.

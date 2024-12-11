@@ -3,10 +3,78 @@ title: "FAQ"
 description: "Section block with frequently asked questions."
 ---
 
-## Default
+All FAQ components have same props.
 
-Docs coming soon...
+## Propeties
 
-## Blocks
+### Data
 
-Docs coming soon...
+`data: FaqItem[]`
+
+Array of items to render. Each FAQ item should have `title` (question) and `content` (answer).
+
+### Type
+
+`type?: "single" | "multiple"`
+
+Determines whether a one or many items can be opened at a time.<br />
+Defaults to `single`.
+
+### Allow closing content
+
+`collapsible?: boolean`
+
+Set this to the true or false to allow or disabled closing of the content for an open item.<br />
+Defaults to `true`.
+
+### Expand first item
+
+`expand?: boolean`
+
+Set this to the true or false to open or close the very first item.<br />
+Defaults to `false`.
+
+### Expand all items
+
+`expandAll?: boolean`
+
+Set this to the true to expand all items.<br />
+Defaults to `false`.
+
+<Note>When `true`, type will be automatically set to `multiple`.</Note>
+
+### Icon
+
+`icon?: "plus" | "chevron"`
+
+Set the icon for open/close state.<br />
+Defaults to `plus`.
+
+You can easily customize the icons if you want to use something else.
+
+### Search
+
+`search?: boolean`
+
+Display search input above the items to allow users to filter FAQ items by title or content.<br />
+Defaults to `true`.
+
+### Transitions
+
+`animate?: boolean`
+
+When `true` the icon and content will transition/animate while expanding, when `false` the expand will be instant without any transitions.
+
+Defaults to value of `VITE_ANIMATIONS` in your `.env` file.
+
+## Default component
+
+`resources/js/Components/Sections/Faq.vue`
+
+This component renders the FAQ in minimalistic styles, using bottom border as separators between items.
+
+## Blocks component
+
+`resources/js/Components/Sections/FaqBlocks.vue`
+
+This component renders the FAQ in blocks with (secondary) background color, using small gaps as separators between items.

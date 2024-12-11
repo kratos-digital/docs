@@ -28,3 +28,42 @@ By default there are six floating blocks, but you can easily update this.
 This components has no props.
 
 <Info>More Hero Components will be available with **{appName}** **v2**.</Info>
+
+## Testimonials
+
+You can pass testimonials stats to any hero component.
+
+By default, they are used on Homepage, passed from `app/Http/Controllers/HomepageController.php` to `resources/js/Pages/Index.vue` component as:
+
+- **avgRating**: Average rating of all approved reviews.
+- **testimonialCount**: Total exact number of approved reviews.
+- **testimonialUsers**: Contains list of recent 6 reviewers (you can update that number in HomepageController) and rounded number of total reviews.
+
+### Stars and rating
+
+Show stars with average rating and total number of reviews:
+
+```javascript
+<StarsRating v-if="avgRating" :rating="avgRating" :total-reviews="testimonialCount" />
+```
+
+Show stars with average rating:
+
+```javascript
+<StarsRating v-if="avgRating" :rating="avgRating" />
+```
+
+### Reviewers
+
+Show avatars (or acronym fallback) with name on hover and total number of reviewers.
+
+```javascript
+<AvatarGroup v-if="reviewers" :data="reviewers" :total="totalReviewers" />
+```
+
+<Note>
+  This number is formatted by default using
+  [get_total_value()](/helpers#get-total-value) helper function.
+</Note>
+
+For more details visit component pages: [Stars rating](/components/extras/stars-rating) and [Avatar groups](/components/extras/avatar-groups).

@@ -4,11 +4,11 @@ title: "Blog"
 
 ## Introduction
 
-Docs coming soon...
+Default Blog module comes with posts and tags.
 
 ## Enable/disable module
 
-### Terminal
+### Via terminal
 
 ```bash
 php artisan module:enable Blog
@@ -23,6 +23,36 @@ php artisan module:disable Blog
 `modules_statuses.json`
 
 Set Blog to `true` (enabled) or `false` (disabled)
+
+## Override files
+
+To override tables for database, you can either update original migration file in `modules/Blog/database/migrations` folder or publish migrations to your application's `migrations` folder.
+
+```bash
+php artisan module:publish-migration blog
+```
+
+To override templates, publish them using this command. Files will be copied to `resources/js/Modules/Blog` folder where you can update them as you wish.
+
+```bash
+php artisan app:publish-module-view blog
+```
+
+Upon calling this command you will be prompted to copy files for admin area, which is disabled by default.
+
+<Warning>
+  It's recommended to publish files if you need to update anything.
+</Warning>
+
+## Configuration
+
+Go to dedicated `config` file and update the settings to fit your application.
+
+### Posts per page
+
+Default is `12`
+
+Set `posts_per_page` to any integer to define how many posts will be shown per page. At the moment, posts are paginated by classic pagination. There will be pagination on scroll (aka infinite load) in future updates.
 
 ## Style
 

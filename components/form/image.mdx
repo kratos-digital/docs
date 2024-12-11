@@ -12,7 +12,11 @@ Use props to style the look of the component:
 
 `image?: string`
 
-Uploaded image or placeholder.
+Uploaded image.
+
+`placeholder?: string`
+
+Placeholder when there's no image. Defaults to `/img/placeholder.svg`
 
 `accept?: string`
 
@@ -20,8 +24,9 @@ Input file `accept` attribute. Defaults to `image/*`.
 
 `isIcon?: boolean`
 
-Set as `true` for icon uploads.<br />
-For icon uploads default accept value is `image/png,image/svg+xml`
+Set as `true` for icon uploads.
+
+For icon uploads default `accept` value is `image/png,image/svg+xml`
 
 ### Button label
 
@@ -43,11 +48,15 @@ Style the wrapper.
 
 ## On file change event
 
-Full docs coming soon...
+When you select/upload an image, it will trigger the default `change` event which will display uploaded image and emit custom `changed` with file data. You can use this event to update your form.
+
+```javascript
+<ImageUpload @changed="(file: File) => (form.image = file)" />
+```
 
 ## Example
 
-You can render default component or customized it using the Vue slots.
+You can render default component or customize it using the Vue slots.
 
 ### Default
 

@@ -3,6 +3,94 @@ title: "Featured media"
 description: "Show featured video or image."
 ---
 
+`resources/js/Components/Sections/Partials/FeaturedMedia.vue`
+
 By default, this component is used in `Hero` and `Key benefits` components, but you can use it wherever it fits.
 
-Full docs coming soon...
+## Properties
+
+### Media source
+
+`src: string`
+
+Pass the media source string (url, path or ID).
+
+### Type
+
+`type?: "image" | "html5" | "youtube" | "vimeo"`
+
+There is no automatic media type detection, so you should pass the type.<br />
+Defaults to `image`.
+
+Image and html5 are used when rendering images or videos from local disk or CDN.
+
+YouTube and Vimeo should be used when you want to render videos from those platforms.
+
+### Image alternate text
+
+`alt?: string`
+
+### Animation
+
+`animate?: boolean`
+
+Media element will animate on scroll. Defaults to global animation value.
+
+`animateFrom?: "left" | "center" | "right"`
+
+Set the position from which the element will animate. Defaults to center. Recommended when there is side content along the media.
+
+### Border
+
+`withBorder?: boolean`
+
+Adds border around the media element. Defaults to false.
+
+### Class
+
+`class?: HTMLAttributes["class"]`
+`mediaClass?: HTMLAttributes["class"]`
+`borderClass?: HTMLAttributes["class"]`
+
+Customize wrapper, media element and border.
+
+## Examples
+
+Go to `resources/js/Components/Sections/HeroDefault.vue` to see working example of the media component that changes according to the hero content alignment.
+
+### Default image
+
+```javascript
+<FeaturedMedia src="/img/placeholder.jpg" />
+```
+
+### Image with border and animation from left
+
+```javascript
+<FeaturedMedia
+  src="/img/placeholder.jpg"
+  :animate="true"
+  animate-from="left"
+  with-border
+/>
+```
+
+### Video
+
+```javascript
+<FeaturedMedia
+  src="/video/myvideo.mp4"
+  type="html5"
+/>
+
+<FeaturedMedia
+  src="https://example.com/myvideo.mp4"
+  type="html5"
+/>
+```
+
+### YouTube video
+
+```javascript
+<FeaturedMedia src="dQw4w9WgXcQ" type="youtube" />
+```

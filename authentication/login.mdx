@@ -29,6 +29,30 @@ Password::defaults(function () {
 });
 ```
 
+## Email verification
+
+By default, all registered users (via email and password) must verify their emails before using the application. Email are verified by clicking the link sent in email after successful registration.
+
+Unverified users can access some parts like name, email and password update, but should be restricted from using your services.
+
+To prevent unverified users from access you can protect your routes with middleware. Go to `routes/web.php` and search for `verified`. You will see that settings, checkout and subscription routes are protected from unverified users. Add your new routes under same middleware to protect them.
+
+<Note>
+  Users registered with social media accounts are verified upon success.
+</Note>
+
+### Disable email verification
+
+If you want to allow email registrations without verification, just remove the `MustVerifyEmail` contract from `User` model. Everything else can stay the same since `verified` middleware will always pass in this case, but it's still recommended to remove the middleware from your routes.
+
+## Banned users
+
+You can ban/unban your users (for example when they violate the terms, etc.). Banned users will not be able to login to application or register new account with same email address.
+
+If you don't want to use ban system, you can just totally ignore it, or remove the code relevant to bans.
+
+You can ban users via admin panel in users datatable.
+
 ## Layout
 
 Authentication system consist of several components:
@@ -64,6 +88,10 @@ Headers for other authentication forms are passed as `header` property in their 
 
 By default, form input labels are displayed above the input fields. If you want to hide labels, set `AUTH_FORM_SHOW_LABELS` to `false` in your `.env` file.
 
+### Name input on Register
+
+By default, registration form contains input field for name. To remove the field from registration form, set `AUTH_WITH_NAME_FIELD` to `false` in your `.env` file.
+
 ### Show/hide password
 
 To enable password visibility toggle, pass the prop `toggleable` to `Input` component.
@@ -74,4 +102,30 @@ To enable password visibility toggle, pass the prop `toggleable` to `Input` comp
 
 ### Social providers position
 
-By default, social providers for login and registration are displayed below other input fields. To display them at the top, set `AUTH_FORM_SOCIAL_PROVIDERS_POSITION` to `top` in your `.env` file.
+By default, social providers for login and registration are displayed below email and password. To display them at the top, set `AUTH_FORM_SOCIAL_PROVIDERS_POSITION` to `top` in your `.env` file.
+
+### Open as modals
+
+By default, login and register forms will open as new pages _/login_ and _/register_.
+
+If you want to open them as modals, go to `resources/js/Components/MainMenu.vue`, and update buttons:
+
+```javascript
+<Button type="button" variant="ghost" @click="authRef?.open()">
+  {{ $t("Login") }}
+</Button>
+<Button type="button" @click="authRef?.open('register')">
+  {{ $t("Sign up") }}
+</Button>
+```
+
+For small devices, replace current buttons under `SheetFooter` with this:
+
+```javascript
+<Button type="button" variant="outline" class="w-full" @click="authRef?.open()">
+  {{ $t("Login") }}
+</Button>
+<Button type="button" class="w-full" @click="authRef?.open('register')">
+  {{ $t("Sign up") }}
+</Button>
+```

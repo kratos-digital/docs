@@ -5,27 +5,29 @@ description: "Setup your application"
 
 import { appName } from "/snippets/vars.mdx";
 
+## Intro
+
 If you didn't already, follow the `README.md` file or [Quickstart](/quickstart) guide to setup the project requirements.
+
+<Info>
+  When using SQLite as your database, it's recommended to have WAL enabled in
+  `config/database.php`. It's enabled by default. If you don't want to use it,
+  just comment out or delete the last 3 settings under `connections.sqlite`;
+  *busy_timeout*, *journal_mode* and *synchronous*.
+</Info>
+
+<Warning>
+  When you run `migrate:fresh` on existing SQL database with WAL enabled, your
+  will probably get an error *"General error: 11 database disk image is
+  malformed"*. After that, just run the command once more. This has been
+  reported on offical Laravel GitHub.
+</Warning>
 
 If you don't want to use [Quick installation](/quickstart#quick-installation) (which is recommended for your first project with **{appName}**), follow these steps.
 
-## Data
+## Database
 
-### Generate dummy content
-
-`database/seeders/DatabaseDemoSeeder.php`
-
-This command runs migrations and seeds the data for you, so you can skip all other steps in this section.
-
-```bash
-php artisan app:demo
-```
-
-<Info>
-  If you prefer to do migrations and seeds manually, follow the steps below.
-</Info>
-
-### Run database migrations without data
+### Run database migrations
 
 This command will create tables defined in `database/migrations`.
 
@@ -33,11 +35,25 @@ This command will create tables defined in `database/migrations`.
 php artisan migrate
 ```
 
+### Generate dummy content
+
+<Warning>Run only after migrations.</Warning>
+
+`database/seeders/DatabaseDemoSeeder.php`
+
+This command seeds the dummy demo data for you, so you can skip all other steps in this section.
+
+```bash
+php artisan app:demo
+```
+
+<Info>If you prefer to do data seeds manually, follow the steps below.</Info>
+
 ### Seed core data
 
 <Warning>Run only after migrations.</Warning>
 
-This command will seed data defined in `database/seeders/DatabaseSeeder.php`.
+This command will run seeders defined in `database/seeders/DatabaseSeeder.php`.
 
 ```bash
 php artisan db:seed
@@ -53,12 +69,17 @@ This command will seed data for each enabled module defined in `modules/{name}/d
 php artisan module:seed
 ```
 
+<Info>
+  You can create your own module seeders in `database/seeders` folder and then
+  you don't need to run this command. Or you can modify default seeders.
+</Info>
+
 ### Refresh migrations and core data
 
 This command will re-create all tables and seed new data for core application.<br />
 All previously saved data will be removed.
 
-<Info>This will not generate dummy data.</Info>
+<Info>This will not generate modules tables, but not dummy data.</Info>
 
 ```bash
 php artisan migrate:fresh --seed
@@ -69,25 +90,168 @@ php artisan migrate:fresh --seed
 This command will re-create all tables and seed new data for core application and modules.<br />
 All previously saved data will be removed.
 
-<Info>This will not generate dummy data.</Info>
+<Info>This will generate modules dummy data.</Info>
 
 ```bash
 php artisan migrate:fresh --seed && php artisan module:seed -a
 ```
 
+```bash
+# Run this command when using sqlite database connection with WAL mode
+php artisan migrate:fresh --seed && sleep 1 && php artisan module:seed -a
+```
+
+<Warning>
+  It's recommended to define your own seeders for modules you will use and just
+  run Laravel seeder command `php artisan db:seed`, instead of updating modules
+  seeder files.
+</Warning>
+
+## Enums
+
+Every enum that comes with the boilerplate uses the `app/Traits/HasEnumOptions.php` trait which extends the enums with custom key-value options, options for select inputs and customized name.
+
+For example, `RoadmapType` enum is using `getDescriptiveName` function to keep the enum names short, but provide more context when using it as part of your UI in options format.
+
+```php
+$type = RoadmapType::Integration;
+
+dd($type); // Integration
+dd($type->getDescriptiveName()); // 3rd party integration
+```
+
+### Get key-value options
+
+<CodeGroup>
+
+```php Without getDescriptiveName()
+$options = RoadmapType::options();
+
+// [
+//   'feature' => 'Feature'
+//   'integration' => 'Integration'
+//   'discussion' => 'Discussion'
+//   'bug' => 'Bug'
+// ]
+```
+
+```php With getDescriptiveName()
+$options = RoadmapType::options();
+
+// [
+//   'feature' => 'Feature request'
+//   'integration' => '3rd party integration'
+//   'discussion' => 'Help request'
+//   'bug' => 'Bug fix request'
+// ]
+```
+
+</CodeGroup>
+
+### Get options for select
+
+```php
+$options = RoadmapType::forSelect();
+
+// [
+//   [
+//     'label' => 'Feature request',
+//     'value' => 'feature',
+//   ],
+//   [
+//     'label' => '3rd party integration'
+//     'value' => 'integration'
+//   ],
+//   [
+//     'label' => 'Help request'
+//     'value' => 'discussion'
+//   ],
+//   [
+//     'label' => 'Bug fix request'
+//     'value' => 'bug'
+//   ],
+// ]
+```
+
+### Get name
+
+<CodeGroup>
+
+```php instance
+$feature = RoadmapType::Feature;
+
+// Returns Modules\Roadmap\Enums\RoadmapType instance with name and value
+
+dd($feature->name); // Feature
+dd($feature->value); // feature
+```
+
+```php getName()
+$feature = RoadmapType::Feature->getName();
+
+// Feature
+```
+
+```php getDescriptiveName()
+$feature = RoadmapType::Feature->getDescriptiveName();
+
+// Feature request
+// only in case getDescriptiveName is defined in enum file
+```
+
+</CodeGroup>
+
 ## Observers
 
 Full docs coming soon...
+
+## Optimization
+
+Run this command to cache your config, events, routes and views (**NOTE: highly recommended for non-local environments**):
+
+```bash
+php artisan optimize
+```
+
+Run this to remove cache:
+
+```bash
+php artisan optimize:clear
+```
 
 ## Code formatting
 
 **{appName}** uses [Laravel Pint](https://laravel.com/docs/11.x/pint) for code formatting.
 
-If you prefer to follow same code style then run this command:
+If you prefer to follow same code style then run this command (**NOTE: this will modify all your files**):
 
 ```bash
 ./vendor/bin/pint
 ```
+
+To inspect for style errors without making any changes, run this command:
+
+```bash
+./vendor/bin/pint --test
+```
+
+To modify only uncommited changes according to Git, run this command:
+
+```bash
+./vendor/bin/pint --dirty
+```
+
+To modify only specific directories or files, run this command (this will modify only files in `Models` folder or `User.php` file, depends which one you run):
+
+```bash
+./vendor/bin/pint app/Models
+
+./vendor/bin/pint app/Models/User.php
+```
+
+<Info>
+  For more detailed usage of the plugin, please visit the official docs.
+</Info>
 
 ## Debugbar
 
@@ -96,3 +260,17 @@ If you prefer to follow same code style then run this command:
 <Warning>Use the Debugbar only in development.</Warning>
 
 It is disabled by default. To enable it set `DEBUGBAR_ENABLED` to `true` in your `.env`.
+
+## Debugging
+
+If your application running on Nginx fails to run with same or similar error "upstream sent too big header while reading response header from upstream", add this to your Ngnix configuration file:
+
+```bash
+location ~ \.php$ {
+  # your config here...
+
+  # Fixes too big header from upstream
+  fastcgi_buffers 16 16k;
+  fastcgi_buffer_size 32k;
+}
+```

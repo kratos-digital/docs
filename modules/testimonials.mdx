@@ -5,11 +5,15 @@ description: "Allow customers to post testimonials."
 
 ## Introduction
 
-Docs coming soon...
+Default Testimonial post consists of rating, reviewer's name, position and company. They can also be limited per user, set for approval by admin, and available only to subscribers.
+
+<Card title="Components" icon="layer-group" href="/components/testimonials">
+  Style testimonial cards.
+</Card>
 
 ## Enable/disable module
 
-### Terminal
+### Via terminal
 
 ```bash
 php artisan module:enable Testimonials
@@ -24,3 +28,51 @@ php artisan module:disable Testimonials
 `modules_statuses.json`
 
 Set Testimonials to `true` (enabled) or `false` (disabled)
+
+## Override files
+
+To override tables for database, you can either update original migration file in `modules/Testimonials/database/migrations` folder or publish migrations to your application's `migrations` folder.
+
+```bash
+php artisan module:publish-migration testimonials
+```
+
+To override templates, publish them using this command. Files will be copied to `resources/js/Modules/Testimonials` folder where you can update them as you wish.
+
+```bash
+php artisan app:publish-module-view testimonials
+```
+
+Upon calling this command you will be prompted to copy files for admin area, which is disabled by default.
+
+<Warning>
+  It's recommended to publish files if you need to update anything.
+</Warning>
+
+## Configuration
+
+Go to dedicated `config` file and update the settings to fit your application.
+
+### Limit reviews per user
+
+Default is `3`
+
+Set `limit_per_user` to `0` to unset the limit.
+
+Set `limit_per_user` to any integer to set the limit. Minimum is one (1).
+
+### User must be subscribed
+
+Default is `false`
+
+Set `must_be_subscribed` to `true` to allow only subscribed users to review your application.
+
+Set `must_be_subscribed` to `false` to allow unsubscribed users to review your application. Unsubscribed users are registered (and verified) users on free plan (if you have one).
+
+### Review must be approved
+
+Default is `true`
+
+Set `must_be_approved` to `true` to include only reviews approved by admin in public pages.
+
+Set `must_be_approved` to `false` to include all reviews in public pages at the moment they're created.

@@ -3,9 +3,7 @@ title: "Authenticated Layout"
 description: "Layout for pages accessible to authenticated users only."
 ---
 
-Full docs coming soon...
-
-## User object
+## User
 
 If you need to use User object in your components, you can get it quickly from layout.
 
@@ -15,10 +13,21 @@ If you need to use User object in your components, you can get it quickly from l
 </AuthenticatedLayout>
 ```
 
-You can see the the real example in `modules/Helpdesk/resources/js/Pages/Index.vue`
+You can see the real example in `modules/Helpdesk/resources/js/Pages/Index.vue`
 
 Usually you could get User object this way:
 
 ```javascript
 const user = computed(() => usePage().props.auth.user);
 ```
+
+### Model
+
+User model has some extra columns compared to the default Laravel User model.
+
+- **public_name**: Public name will be used instead of full (real) name in places where user's name is displayed, such as roadmap, testimonials, etc. Users can update their public name under profile settings.
+- **is_banned**: Defines user's ban status. Banned users will not be able to access the application's authenticated page or register under the same email or social provider.
+- **info**: JSON containing additional information about the user, such as job position, company, about info, etc.
+- **country_code**: User's country defined by two-letter ISO 3166-1 country code (manually selected by user)
+- **timezone**: User's timezone (manually selected by user)
+- **notification_settings**: JSON containing user's consent for various in-app notifications

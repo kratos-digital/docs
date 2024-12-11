@@ -3,18 +3,103 @@ title: "Heading"
 description: "Render page headings."
 ---
 
+import { appName } from "/snippets/vars.mdx";
+
 ## Intro
 
-Docs coming soon...
+`resources/js/Components/Sections/Heading/index.ts`
+
+Heading is a set of components to create common section headings, consisting of subtitle, title and description.
+
+To customize each component independently, you can set the `class` prop with your custom styles.
+
+## Wrapper
+
+`resources/js/Components/Sections/Heading/Heading.vue`
+
+This is the wrapper of the heading component which defines styles like text alignment and gaps between inner elements.
+
+You can select between three different alignments by passsing the prop `align?: "left" | "center" | "right"` to the component.
+
+Default is `center`.
 
 ## Title
 
-Docs coming soon...
+`resources/js/Components/Sections/Heading/HeadingTitle.vue`
+
+You can set the heading style `tag?: "h1" | "h2"` and text size `size?: "sm" | "md" | "lg"`.
+
+Default is `h2` with `md` size.
 
 ## Subtitle
 
-Docs coming soon...
+`resources/js/Components/Sections/Heading/HeadingSubtitle.vue`
+
+It uses another minor component: `resources/js/Components/Sections/Partials/Subtitle.vue`
+
+Read more [here](/components/extras/subtitle) about the `Subtitle` component.
 
 ## Description
 
-Docs coming soon...
+`resources/js/Components/Sections/Heading/HeadingDescription.vue`
+
+You can set the text size `size?: "default" | "sm" | "lg"`.
+
+## Examples
+
+<CodeGroup>
+
+```javascript Default
+<Heading>
+    <HeadingSubtitle>{{ $t("Subtitle") }}</HeadingSubtitle>
+    <HeadingTitle>
+        {{ $t("Title") }}
+    </HeadingTitle>
+    <HeadingDescription>
+        {{ $t("Description...") }}
+    </HeadingDescription>
+</Heading>
+```
+
+```javascript Left-aligned
+<Heading align="left">
+    <HeadingSubtitle>{{ $t("Subtitle") }}</HeadingSubtitle>
+    <HeadingTitle>
+        {{ $t("Title") }}
+    </HeadingTitle>
+    <HeadingDescription>
+        {{ $t("Description...") }}
+    </HeadingDescription>
+</Heading>
+```
+
+```javascript Hero
+<Heading>
+    <HeadingSubtitle>{{ $t("Hero subtitle") }}</HeadingSubtitle>
+    <HeadingTitle tag="h1" size="lg">
+        {{ $t("Hero Title") }}
+    </HeadingTitle>
+    <HeadingDescription size="lg">
+        {{ $t("Hero description...") }}
+    </HeadingDescription>
+</Heading>
+```
+
+```javascript Title
+<Heading>
+    <HeadingTitle>
+        {{ $t("Title") }}
+    </HeadingTitle>
+</Heading>
+```
+
+```javascript Title + subtitle
+<Heading>
+    <HeadingSubtitle>{{ $t("Subtitle") }}</HeadingSubtitle>
+    <HeadingTitle>
+        {{ $t("Title") }}
+    </HeadingTitle>
+</Heading>
+```
+
+</CodeGroup>

@@ -24,9 +24,9 @@ RECAPTCHA_V3_SECRET_KEY=
 
 This is disabled by default, so to enable it set `RECAPTCHA_ENABLED` to `true` in your `.env`.
 
-Default version is set to `v3` (reCAPTCHA v3). To update default version set `RECAPTCHA_VERSION` to `checkbox` (I'm not a robot checkbox) or `invisible` (Invisible reCAPTCHA v2 badge) in your `.env`.
+Default version is set to `v3` (reCAPTCHA v3). To update default version add `RECAPTCHA_VERSION` to your `.env` file and set its value to `checkbox` (I'm not a robot checkbox) or `invisible` (Invisible reCAPTCHA v2 badge).
 
-Passing score for `v3` is set to `0.5` by default. To update score set `RECAPTCHA_V3_SCORE` to desired value in your `.env`.
+Passing score for `v3` is set to `0.5` by default. To update score add `RECAPTCHA_V3_SCORE` to your `.env` file and set its value to desired score.
 
 ## How to use it?
 
@@ -34,66 +34,127 @@ Go to reCAPTCHA dashboard https://www.google.com/recaptcha/admin/create
 
 Copy and paste generated keys to `.env` file.
 
-1. Import the component in pages where you will use it
+<Info>You can find working example in `LoginForm.vue` component.</Info>
+
+### Import and define recaptcha
 
 ```javascript
 import Recaptcha from "@/Components/Form/Recaptcha.vue";
 
 const recaptcha = ref<{
   execute: () => Promise<string>;
+  reset: () => Promise<string>;
 } | null>(null);
 
 const form = useForm({
-  email: "",
-  password: "",
-  remember: true,
-  // Add this to your form
+  // You form data here...
+  // Add this
   recaptcha: "",
 });
 ```
 
-2. Include it in your template
+### Render component
 
 <CodeGroup>
 
 ```javascript v3
-<Recaptcha ref="recaptcha" />
+<form @submit.prevent="submit">
+  <Recaptcha ref="recaptcha" />
 
-// Also add component to render the error message if validation fails
-<ErrorMessage :message="form.errors.recaptcha" />
+  // Also add component to render the error message if validation fails
+  <ErrorMessage :message="form.errors.recaptcha" />
+</form>
 ```
 
 ```javascript v2
-<Recaptcha ref="recaptcha" @verify="onVerify" />
+<form @submit.prevent="submit">
+  <Recaptcha ref="recaptcha" @verify="onVerify" />
 
-// Also add component to render the error message if validation fails
-<ErrorMessage :message="form.errors.recaptcha" />
-
-// Also define the onVerify method in script setup, for example:
-const onVerify = (token: string) => {
-  form.recaptcha = token;
-};
+  // Also add component to render the error message if validation fails
+  <ErrorMessage :message="form.errors.recaptcha" />
+</form>
 ```
 
 </CodeGroup>
 
-3. For `v3`, do this to get valid token
+### Get token
 
-```javascript
+<CodeGroup>
+
+```javascript v3
 const submit = async () => {
   // Custom trigger form processing
   form.processing = true;
 
   if (recaptcha.value) {
+    // Get valid token
     form.recaptcha = await recaptcha.value.execute();
   }
 
-  // Trigger the form
-  form.post(route("some-post-route"));
+  // Submit the form
+  form.post(route("route-name"));
 };
 ```
 
-4. In your form request or validator, validate the recaptcha token
+```javascript v2 checkbox
+// Define the onVerify method in script setup.
+// This will trigger when user completes the challenge.
+const onVerify = (token: string) => {
+  form.recaptcha = token;
+};
+
+const submit = async () => {
+  // Custom trigger form processing
+  form.processing = true;
+
+  form.post(route("route-name"), {
+    onError: () => {
+      // Reset checkbox on error
+      if (recaptcha.value) {
+        form.recaptcha = "";
+        recaptcha.value.reset();
+      }
+    },
+  });
+};
+```
+
+```javascript v2 invisible
+// NOTE: v2 invisible should be triggered by button.
+
+const submit = async () => {
+  // Custom trigger form processing
+  form.processing = true;
+
+  if (recaptcha.value) {
+    // Get valid token
+    // NOTE: This will trigger verify event
+    await recaptcha.value.execute();
+  }
+};
+
+const onVerify = (token: string) => {
+  // Set the token
+  form.recaptcha = token;
+
+  // Submit the form from here
+  form.post(route("route-name"), {
+    onError: () => {
+      // Reset token on error
+      if (recaptcha.value) {
+        form.recaptcha = "";
+        recaptcha.value.reset();
+      }
+    },
+  });
+};
+```
+
+</CodeGroup>
+
+### Validate token with Google
+
+Add this tou your form request or validator.
 
 ```php
 use App\Rules\Recaptcha;
@@ -104,11 +165,11 @@ use App\Rules\Recaptcha;
 ]
 ```
 
-Or set the rule like this (recommended) to exclude the field from `validate` and `validated` methods:
+Or set the rule like this to exclude the field from the request data returned by the `validate` and `validated` methods:
 
 ```php
 [
-    'recaptcha' => ['exclude', new Recaptcha],
+    'recaptcha' => [new Recaptcha, 'exclude'],
     // other rules go here
 ]
 ```

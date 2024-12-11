@@ -7,11 +7,11 @@ import { appName } from "/snippets/vars.mdx";
 
 ## Intro
 
+To set payment provider other than Stripe, define `PAYMENT_PROVIDER` variable in your `.env`.
+
 <Info>
   Default and currently only supported payment provider is **Stripe**.
 </Info>
-
-To set payment provider other than Stripe, define `PAYMENT_PROVIDER` variable in your `.env`.
 
 ## One-time payments
 
@@ -26,13 +26,59 @@ This is the default setup.
 
 To enable trial periods set `PAYMENT_TRIAL_DAYS` to number of days.
 
+## Currency
+
+Default currency is set to `USD`.
+
+To update default currency for your plans and application, go to `.env` file and update this variable:
+
+```bash
+CASHIER_CURRENCY='eur'
+```
+
+<Warning>Currency must be defined with lowercased ISO 4217 code.</Warning>
+
+### Format
+
+Default currency format is `en_US`.
+
+To update default currency format, go to `.env` file:
+
+```bash
+CASHIER_CURRENCY_LOCALE=de_DE
+```
+
+```php
+// Formatting using en_US:
+// $1,000.00
+// €500.00
+// £19.99
+
+// Formatting using de_DE:
+// 1.000,00 $
+// 500,00 €
+// 19,99 £
+
+// Formatting using nl_BE:
+// US$ 1.000,00
+// € 500,00
+// £ 19,99
+```
+
 ## Highlighted plan
 
 If you want to highlight specific plan, for example the best value plan, set `PAYMENT_HIGHLIGHTED_PRODUCT_ID` to the ID of the plan.
 
 ## Cache
 
-Some payment data is cached for limited time of 24h. To update this amount set `PAYMENT_CACHE_DURATION` to desired time in **milliseconds**.
+Some payment data, like products and coupons, is cached upon update. Cache keys are defined in `config/payments.php` under `settings.cache_keys`. Feel free to update those keys as you wish.
+
+To delete data from cache manually you can call this command in your terminal:
+
+```bash
+php artisan cache:forget payment_products
+php artisan cache:forget payment_coupons
+```
 
 ## Authenticated payments
 
@@ -40,48 +86,122 @@ When using one-time payments you can allow your users to buy products without re
 
 To enable this set `PAYMENT_MUST_BE_AUTHENTICATED` to `false`.
 
-Subscriptions require user authentication.
+<Warning>Subscriptions require user authentication.</Warning>
+
+## Address
+
+To enforce address calculation at checkout set `PAYMENT_COLLECT_ADDRESS` to `true`.
 
 ## Taxes
 
-To enable tax calculation on checkout set `PAYMENT_CALCULATE_TAXES` to `true`.
+To enable tax calculation at checkout set `PAYMENT_CALCULATE_TAXES` to `true`.
 
 ### Tax IDs
 
-To disable customer tax IDs on checkout set `PAYMENT_COLLECT_TAX_IDS` to `false`.<br />
-It is enabled by default.
+To disable customer tax IDs at checkout set `PAYMENT_COLLECT_TAX_IDS` to `false`.
+
+Enabled by default.
 
 ## Discounts
 
-To disable discount and coupons on checkout set `PAYMENT_ALLOW_DISCOUNTS` to `false`.<br />
-It is enabled by default.
+To disable discount and coupons at checkout set `PAYMENT_ALLOW_DISCOUNTS` to `false`.
+
+Enabled by default.
 
 ### Coupons
 
-To apply coupons to specific products, set `PAYMENT_COUPONS` value in format `product_id:coupon_code`.
+To create a coupon go to [Stripe dashboard](https://dashboard.stripe.com/), click **Product catalog** in sidebar, and then click **Coupons** in subnav, and then click **Create coupon** button.
 
-A coupon contains information about a percent-off or amount-off discount you might want to apply to a product.
+There you can set information about a percent-off or amount-off discount you might want to apply to a product, limitations, expiration, etc.
 
-<Warning>Applied coupons cannot be removed during checkout.</Warning>
+To apply coupons to products, run this command and follow the prompts:
 
-To create a coupon go to [Stripe dashboard](https://dashboard.stripe.com/), click **Product catalog** in sidebar, and then click **Coupons** in subnav.
+```bash
+php artisan payments:coupon
+```
+
+You can apply different coupon to different product, or use single coupon for all products.
+
+<Warning>
+  Applied coupons reduce the price and cannot be removed during checkout by
+  user. This is the Stripe feature.
+</Warning>
+
+To remove applied coupons from your products, run this command:
+
+```bash
+php artisan payments:remove-coupons
+```
 
 ### Promotion codes
 
-To apply promotion codes to specific products, set `PAYMENT_PROMO_CODES` value in format `product_id:promo_id`.
+To create a promotion code go to [Stripe dashboard](https://dashboard.stripe.com/), click **Product catalog** in sidebar, then click **Coupons** in subnav, then create or select an existing coupon.
 
-A Promotion Code represents a customer-redeemable code for a coupon.
+On coupon page, look for Promotion Codes section and create new promotion codes for this coupon.
+
+Promotion Code represents a customer-redeemable code for a coupon.
+
+You can also apply promotion codes to your products using the same artisan command.
 
 <Info>
-  To apply a promo code, you must use ID (*API ID*), not code (*Promotion
-  code*).
+  To apply a promo code, you must use promotion code ID (*API ID*), not code
+  (*Promotion code*).
 </Info>
 
-<Info>Customers must apply the code (*30*), not ID (*promo_1Q5p...*).</Info>
+<Info>Customers must apply the code (*30*), and not ID (*promo_1Q5p...*).</Info>
 
 <Frame>
   <img src="/images/promo-codes.jpg" style={{ borderRadius: "0.5rem" }} />
 </Frame>
 
-To create a promotion code go to [Stripe dashboard](https://dashboard.stripe.com/), click **Product catalog** in sidebar, then click **Coupons** in subnav, then create or select an existing coupon.<br />
-On coupon page, look for Promotion Codes section and create new promotion codes for this coupon.
+## Free trials
+
+To enable free trials set `PAYMENT_TRIAL_DAYS` to the number of days.
+
+```bash
+PAYMENT_TRIAL_DAYS=3
+```
+
+<Warning>Free trials work only with subscriptions.</Warning>
+
+### Without payment method up front
+
+If you would like to offer trial periods without collecting the user's payment method information up front, you may set the `trial_ends_at` column on the user record to your desired trial ending date.
+
+This is typically done during user registration:
+
+```php
+$user = User::create([
+  // ...
+  'trial_ends_at' => now()->addDays(3),
+]);
+```
+
+## Check if subscribed
+
+To check if user is subscribed you can use middleware `subscribed` defined here `app/Http/Middleware/Subscribed.php`.
+
+This will check if user has any purchased product when using single payments or valid subscription when using recurring payments.
+
+```php
+Route::middleware(['subscribed'])->group(function () {
+  Route::get('/secret-page', fn () => dd('You are subscribed'));
+});
+```
+
+You can also check if user is subscribed to specific price or product:
+
+```php
+Route::middleware(['subscribed:some_price_id'])->group(function () {
+  Route::get('/secret-page', fn () => dd('You are subscribed to this price'));
+});
+
+Route::middleware(['subscribed:some_product_id'])->group(function () {
+  Route::get('/secret-page', fn () => dd('You are subscribed to this product'));
+});
+```
+
+<Info>
+  Unsubscribed users will be redirected and shown a corresponding toast
+  notification.
+</Info>

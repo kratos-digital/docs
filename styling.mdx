@@ -3,13 +3,17 @@ title: Styling
 description: "Setup logo, colors, fonts, and other visuals for your application."
 ---
 
-import { appUrl } from "/snippets/vars.mdx";
+import { appName, appUrl } from "/snippets/vars.mdx";
 
 ## Theme
 
-There are several predefined shadcn themes: `resources/css/theme-{color}.css`.
+There are several predefined shadcn themes included: `resources/css/theme-{color}.css`.
 
 To use one of the themes, update this line: `@import url(theme-neutral.css)` in `app.css`.
+
+To update default border radius, change the `--radius` value in your theme `css` file.
+
+For example, if you want sharp borders, use this `--radius: 0rem` and if you want round borders, use this `--radius: 1rem`. Default is `--radius: 0.5rem`. You can set any value and see what works best for you.
 
 ### Custom themes
 
@@ -27,13 +31,96 @@ npx shadcn-custom-theme primary=orange secondary=green accent=pink gray=neutral
 
 Of course, you can always override default colors with your custom colors on specific places. For example, `Card` background color `bg-red-100 dark:bg-red-900` or `Button` `bg-indigo-600`, etc.
 
+### TailwindCSS
+
+**{appName}** uses TailwindCSS for styling.
+
+To update default configuration, open `tailwind.config.js` and do the updates.
+
+<Info>
+  To override default Tailwind styles, define the properties inside `theme`
+  object.
+</Info>
+
+```javascript
+theme: {
+  container: {
+    center: true,
+    padding: "2rem",
+    screens: {
+      "2xl": "1536px",
+    },
+  },
+}
+```
+
+<Info>
+  To extend default Tailwind styles, define the properties inside `theme.extend`
+  object.
+</Info>
+
+```javascript
+theme: {
+  extend: {
+    screens: {
+      "phone-xs": { raw: "(max-width: 389px)" },
+      phone: { raw: "(max-width: 639px)" },
+    },
+  },
+}
+```
+
+#### Defaults
+
+For some properties you can set the default value to shorten your classes. Just name them as `DEFAULT` in your config.
+
+<CodeGroup>
+
+```javascript Colors
+// text-primary, bg-primary, border-primary, etc. will use the primary color
+// text-primary-foreground, bg-primary-foreground, etc. will use the foreground color
+colors: {
+  primary: {
+    DEFAULT: "hsl(var(--primary))",
+    foreground: "hsl(var(--primary-foreground))",
+  },
+}
+```
+
+```javascript Transition duration
+// All transition classes will use this duration by default, unless you set one of the available classes for duration
+transitionDuration: {
+  DEFAULT: "200ms",
+}
+```
+
+```javascript Transition timing function
+// All transition classes will use this timing function by default, unless you set one of the available clasess for timing functions
+transitionTimingFunction: {
+  DEFAULT: "ease-in-out", // or cubic-bezier value
+}
+```
+
+</CodeGroup>
+
+#### Safelist
+
+Safelist contains list of classes that should always be included with the build. But don't just safelist any class, use it in situations where classes are dynamically generated and can't be auto-recognized.
+
+```javascript
+safelist: ["dark", "backdrop-blur"];
+```
+
 ## Logo
 
-Recommended way is to update `resources/js/Components/ApplicationLogo.vue` with your own logo SVG.
+Recommended way is to update `resources/js/Components/ApplicationLogo.vue` with your own SVG logo.
 
-Make sure to add this `class="fill-current"` to `svg` tag if you have one-colored logo.
+You can also upload `PNG` or `SVG` image to the `public` folder and use `img` tag instead.
 
-You can also upload PNG or SVG image to the `public` folder and use `img` tag instead.
+<Warning>
+  If you have trouble with the logo display, just create a support ticket and I
+  will help you with it.
+</Warning>
 
 ## Favicon
 
@@ -89,13 +176,36 @@ Then update the `tailwind.config.js` accordingly.
 
 To use fonts from other providers like Typekit, jsDelivr or Unpkg, just follow their docs and update `app.blade.php` and `tailwind.config.js` accordingly.
 
-If you need help to include custom fonts which are not hosted on any CDN, please, create [Helpdesk ticket](https://butchr.dev/support) in your dashboard.
+If you need help to include custom fonts which are not hosted on any CDN, please, create [Helpdesk ticket](https://butchr.dev/helpdesk) in your dashboard.
 
-## Links
+## Typography
 
-Docs coming soon...
+To style HTML coming from editor **{appName}** uses `@tailwindcss/typography` package and its prose classes.
 
-## Text highlight
+You can style it under `typography` in `tailwind.config.js` configuration file and in `resources/css/app.css` using `.prose` class (there are already some custom styles included).
+
+### Links
+
+There are two predefined styles for anchor tags (links).
+
+```css
+.inline-link {
+  @apply underline underline-offset-4 transition hover:text-primary;
+}
+
+.inline-link-v2 {
+  @apply underline underline-offset-4 transition hover:no-underline;
+}
+```
+
+```html
+<template>
+  <a href="#link" class="inline-link">Link</a>
+  <Link href="#link" class="inline-link-v2">Link</Link>
+</template>
+```
+
+### Text highlight
 
 By default, text highlight will be in combination of background and foreground colors.
 
@@ -109,4 +219,33 @@ body {
 
 ## Icons
 
-Docs coming soon...
+Default icons used across the application are [Lucide](https://lucide.dev/icons/) icons.
+
+You can import them like this in your script setup:
+
+```javascript
+import {
+  CrownIcon,
+  SwordsIcon,
+  GemIcon,
+  PackageIcon,
+  CreditCardIcon,
+  UsersIcon,
+  ShieldCheckIcon,
+  MessageSquareMoreIcon,
+  BotIcon,
+} from "lucide-vue-next";
+```
+
+And use them like this in your template:
+
+```javascript
+<CrownIcon class="size-4" />
+<SwordsIcon class="size-6 text-primary" />
+```
+
+### Social icons
+
+Since Lucide doesn't provide icons for social media providers, they are custom-generated using [Simple Icons](https://simpleicons.org/).
+
+To check which icons are available with **{appName}**, how to use them and how to add new icons, go to [this page](/components/extras/icons).

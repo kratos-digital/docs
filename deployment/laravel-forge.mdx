@@ -2,4 +2,13 @@
 title: "Laravel Forge"
 ---
 
-Docs coming soon...
+Full docs coming soon...
+
+## Nginx errors
+
+If you get 502 nginx error, check your logs. If your error is "upstream sent too big header while reading response header from upstream" then you can update your Nginx config file, under `location ~ \.php$`
+
+```bash
+fastcgi_buffers 16 16k;
+fastcgi_buffer_size 32k;
+```

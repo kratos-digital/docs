@@ -5,4 +5,10 @@ description: "Page to announce new updates and collect email to the waitlist."
 
 `resources/js/Pages/ComingSoon.vue`
 
-Docs coming soon...
+To disable Coming Soon page, set `COMING_SOON` to false in your `.env` file.
+
+It is enabled by default.
+
+Coming Soon page comes with two routes: /coming-soon GET with form to apply to the waitlist and POST to save emails in database.
+
+You can customize the behavior by updating its controller `app/Http/Controllers/SubscribeToWaitlist.php`

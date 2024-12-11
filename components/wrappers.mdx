@@ -126,13 +126,13 @@ Use `transparent` to display header in semi-transparent background color defined
 
 `shadow?: boolean`
 
-Defaults to `false`.
+Defaults to `true`.
 
-Set to `true` to add shadow to the header.
+Set to `false` to remove shadow from the header.
 
 ## Application footer
 
-Footers are used to include useful information at the bottom of each page, like a sitemap to help users navigate the site, links to social media, logo, tagline, copyright information, etc.
+Footers are used to include useful information at the bottom of each page, like a sitemap to help users navigate the site, links to social media, logo, name, tagline, copyright information, etc.
 
 ### Copyright
 
@@ -146,7 +146,7 @@ By default content is `&copy; 2024.`
 
 This layout will display info and links in grid (vertical on small devices, horizontal on large devices).
 
-Info section consists of logo, tagline, copyright and social media links.
+Info section consists of logo, name, copyright and social media links.
 
 Links are grouped in 3 sections: **Links**, **App** and **Legal**.
 
@@ -164,7 +164,7 @@ Important links are display in 2 or 3 grid columns, depending on screen size.
 
 <Info>More layouts come with **{appName}** **v2**.</Info>
 
-## Navigation links
+## Navbar
 
 All global navigation links are defined in `resources/js/lib/navs.ts`.
 
@@ -180,13 +180,13 @@ Main menu component is included with `AppHeader`.
 
 You can use simple links in your navigation. Simple links are the links that can lead to another page, scroll to specific section or open external page.
 
-Links should be typed with NavLink defined in `resources/js/types/index.d.ts`.
+Links should be typed with `NavLink` defined in `resources/js/types/index.d.ts`.
 
 - **title**: Required. Title/label of the link.
-- **routeName**: Optional. Set route name to link to internal pages.
+- **link**: Required. Set route name to link to internal pages or page URL.
 - **section**: Optional. Used when scrolling to section ID.
-- **url**: Optional. Set URL to link to external pages or to open in new tab.
-- **active**: Optional. Set the rule to check if current link is active.
+- **newTab**: Optional. Set to true to open link in new tab.
+- **active**: Optional. Define the rule to check if current link is active.
 - **icon**: Optional. Icon component.
 
 #### Internal link
@@ -197,12 +197,12 @@ Links will lead to `route('blog.index')` and `route('testimonials.index')`. Also
 const navLinks: NavLink[] = [
   {
     title: trans("Blog"),
-    routeName: "blog.index",
+    link: "blog.index",
     active: "blog.*",
   },
   {
     title: trans("Testimonials"),
-    routeName: "testimonials.index",
+    link: "testimonials.index",
     active: "testimonials.index",
   },
 ];
@@ -216,26 +216,46 @@ Those links will scroll to the elements `#pricing` or `#faq` ID when on `index` 
 const navLinks: NavLink[] = [
   {
     title: trans("Pricing"),
-    routeName: "index",
+    link: "index",
     section: "#pricing",
   },
   {
     title: trans("FAQ"),
-    routeName: "index",
+    link: "index",
     section: "#faq",
   },
 ];
 ```
 
-#### External link
+By default, scroll to section will be smooth and it will scroll to the center of the block. You can update those settings globally in `resources/js/composable/useScrollTo.ts` or per function call:
+
+```javascript
+<Button
+  type="button"
+  @click="
+    scrollTo({
+      target: '#section-id',
+      routeName: 'index',
+      options: { behavior: 'instant', block: 'start' },
+    })
+  "
+>
+  {{ $t('Scroll to section') }}
+</Button>
+```
+
+When using `start` you can also control the scroll offset with [scroll margin](https://tailwindcss.com/docs/scroll-margin).
+
+#### Open link in new tab
 
 This will open internal page in new tab.
 
 ```javascript
 const navLinks: NavLink[] = [
   {
-    title: trans("Documentation"),
-    url: route("docs"),
+    title: trans("Blog"),
+    link: route("blog.index"),
+    newTab: true,
   },
 ];
 ```
@@ -246,13 +266,133 @@ This will open external page in new tab.
 const navLinks: NavLink[] = [
   {
     title: trans("Documentation"),
-    url: "https://docs.butchr.dev",
+    link: "https://docs.butchr.dev",
+    newTab: true,
   },
 ];
+```
+
+#### scrollTo function
+
+`scrollTo` functions is used to direct user to the target section by scrolling (on same page) or redirect (on different page).
+
+When using `Link` or `a` elements you can pass an event to prevent default behavior.
+
+Function accepts 4 arguments:
+
+- **event** - You can pass an event to prevent default behavior for `a` element or `Link` component
+- **target** - element selector, ID is recommended
+- **routeName** - route name to handle redirects between pages, use in shared components likes navigation, footer, etc.
+- **options** - you can pass `behavior` and `block` for native `scrollIntoView` function
+
+```javascript
+import { scrollTo } from "@/composable/useScrollTo";
+
+<Link
+  href="/#foo"
+  @click="
+    scrollTo({
+      target: '#foo',
+      routeName: 'index',
+      event: $event,
+    })
+  "
+>
+  {{ $t("Click me") }}
+</Link>
+
+<button
+  type="button"
+  @click="scrollTo({
+    target: '#foo',
+    routeName: 'index',
+    options: { behavior: 'instant', block: 'start' },
+  })"
+>
+  {{ $t("Click me") }}
+</button>
 ```
 
 ### Mega menu
 
 Mega menu is generated with [shadcn-vue Navigation Menu](https://www.shadcn-vue.com/docs/components/navigation-menu.html).
 
-Full docs coming soon...
+#### External links
+
+...
+
+#### Trigger menu
+
+To generate menu you should include those components:
+
+```javascript
+<NavigationMenuItem>
+  <NavigationMenuTrigger :class="navMenuLinkClass">
+    {{ $t("Features") }}
+  </NavigationMenuTrigger>
+  <NavigationMenuContent>
+    <ul
+      :class="cn(navMenuWrapperClass)"
+      :style="getMenuContentStyle()"
+    >
+      <li v-for="item in features" :key="item.title">
+        <NavigationMenuLink as-child>
+          <NavigationMenuListItem :item="item" />
+        </NavigationMenuLink>
+      </li>
+    </ul>
+  </NavigationMenuContent>
+</NavigationMenuItem>
+```
+
+`navMenuLinkClass` presents the set of predefined classes to style the menu triggers. `navMenuWrapperClass` presents the set of predefined classes to style the menu wrapper (defaults to 3 columns). You can customize those in `resources/js/Components/MainMenu.vue`.
+
+`getMenuContentStyle` is class to calculate dynamic width of the menu. It accepts 1 parameter `cols` (defaults to 3) which represents the number of columns you want to render in the menu. Go to `MainMenu` component to customize the sizes if required.
+
+You can trigger menu on **hover** or **click** (default).
+
+To trigger menu on hover instead, set the prop `disable-hover-trigger` to `false` on `NavigationMenu` component.
+
+For addtional customization, visit the offical (docs)[https://www.radix-vue.com/components/navigation-menu.html#root]
+
+#### Active state
+
+To define active state of main page links (the ones in navbar), set `:data-active="route().current('blog.*') ? true : undefined"` to the `NavigationMenuLink` component.
+
+By default, `NavigationMenuLink` renders `a` tag. To use the Inertia routing, you should define `:as="Link"` attribute.
+
+For external links, just add `target="_blank"` attribute.
+
+```javascript
+<NavigationMenuItem>
+  <NavigationMenuLink
+    :as="Link"
+    :href="route('blog.index')"
+    :data-active="route().current('blog.*') ? true : undefined"
+  >
+    {{ $t("Blog") }}
+  </NavigationMenuLink>
+</NavigationMenuItem>
+```
+
+`route().current()` is a helper function where you can determine current route by checking the exact route name (for example `blog.index`) or route name expressions (for example `blog.*` where all routes starting with `blog.` will return true).
+
+To style, go to `resources/js/Components/ui/navigation-menu/index.ts` and use `data-[active]:` class selector to customize the active states.
+
+To define active state of inner page links (the ones inside menus), define the active state rule.
+
+```javascript
+{
+  title: "Wall of Trust",
+  description: "See what our customers say",
+  routeName: "testimonials.index",
+  active: "testimonials.index",
+  icon: HeartHandshakeIcon,
+},
+```
+
+To style, go to `resources/js/Components/NavigationMenuListItem.vue` and update the class under `route().current(item.active)` condition.
+
+#### Example
+
+Docs coming soon...

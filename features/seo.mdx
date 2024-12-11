@@ -37,7 +37,7 @@ return Inertia::render('MyPageIndex', [
     'meta' => [
         'title' => __('Meta title'),
         'description' => __('Meta description'),
-        'image' => 'url to the image',
+        'image' => 'https://this-is-path-to-the-image.com',
         // other meta props...
     ],
 ]);
@@ -58,6 +58,10 @@ Meta title can be set in three different ways:
 1. Pass the `title` in `meta` prop as in example above.
 2. Set `pageTitle` (without `title` in `meta`) and this value will be used.
 3. Override title (or any other meta tag) in your page components, right after the layout
+
+Meta title is generated via title format. Default title format is `%page_title% | %app_name%`. You can update the format via Admin panel or by updating the `APP_TITLE_FORMAT` in `.env` file.
+
+Placeholder `%page_title%` is the meta title you set, and `%app_name%` is placeholder for your application name.
 
 <CodeGroup>
 
@@ -93,6 +97,25 @@ You can also set or override tab title using `Head` component.
   <Head :title="$t('Tab title')" />
 </PageLayout>
 ```
+
+### Title format
+
+By default, meta title will be formatted as `%page_title% | %app_name%` where page_title is the title your set, and app_name is the name of your application. You can update the format by updating the `APP_TITLE_FORMAT` in `.env` file or via admin panel under `admin/meta`.
+
+You can also override the format per page by passing the `titleFormat` prop.<br />
+Overriding the title format is useful when you add the app name in your title and want to avoid duplicated strings.
+
+```php
+return Inertia::render('MyPageIndex', [
+    'meta' => [
+        'title' => __('What is :name?', ['name' => config('app.name')]),
+        // This will render only the title, without app name behind it
+        'titleFormat' => '%page_title%',
+    ],
+]);
+```
+
+In this specific case, instead of "What is Butchr? | Butchr" we will have "What is Butchr?" title.
 
 ### Pagination
 

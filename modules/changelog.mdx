@@ -3,13 +3,9 @@ title: "Changelog"
 description: "Public history of application updates."
 ---
 
-## Introduction
-
-Docs coming soon...
-
 ## Enable/disable module
 
-### Terminal
+### Via terminal
 
 ```bash
 php artisan module:enable Changelog
@@ -24,3 +20,23 @@ php artisan module:disable Changelog
 `modules_statuses.json`
 
 Set Changelog to `true` (enabled) or `false` (disabled)
+
+## Override files
+
+To override tables for database, you can either update original migration file in `modules/Changelog/database/migrations` folder or publish migrations to your application's `migrations` folder.
+
+```bash
+php artisan module:publish-migration changelog
+```
+
+To override templates, publish them using this command. Files will be copied to `resources/js/Modules/Changelog` folder where you can update them as you wish.
+
+```bash
+php artisan app:publish-module-view changelog
+```
+
+Upon calling this command you will be prompted to copy files for admin area, which is disabled by default.
+
+<Warning>
+  It's recommended to publish files if you need to update anything.
+</Warning>

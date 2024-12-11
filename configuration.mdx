@@ -202,6 +202,7 @@ Shared properties are available in every page and component via Inertia `usePage
 - **app**: contains common application props such as name, locale, settings, etc.
 - **flash**: contains status, description and type of flash message
 - **modules**: contains all the enabled modules
+- **legalPages**: contains the link data of all legal pages
 - **auth**: contains the data of authenticated user
 
 ### Dynamic global props
@@ -291,7 +292,7 @@ public function getSlugOptions(): SlugOptions
 
 [Spatie Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction) is package used to provide image uploads.
 
-You can update the settings here: `/config/media-library.php`.<br />
+You can update the settings here: `config/media-library.php`.<br />
 Default settings are usually good enough.
 
 To enable image uploads you should implement `Spatie\MediaLibrary\HasMedia` interface and use the `App\Traits\HasMediaUploads` trait on your Eloquent Model.
@@ -304,6 +305,7 @@ public function registerMediaCollections(): void
 {
     $this
         ->addMediaCollection('cover')
+        ->useDisk('public')
         ->singleFile()
         ->registerMediaConversions(function (Media $media) {
             $this
@@ -319,14 +321,20 @@ public function registerMediaCollections(): void
 }
 ```
 
+- `addMediaCollection`: Defines the collection name.
+- `useDisk`: Defines the disk name.
+- `singleFile`: There will always be just one file uploaded.
+- `registerMediaConversions`: Resized variants of original file. Read more in [official docs](https://spatie.be/docs/laravel-medialibrary/v11/converting-images/defining-conversions).
+
 Then you should upload the image in your Controller or Service/Action.<br />
 Method `uploadImage` is defined in the trait `HasMediaUploads` where you can check it's definition.
 
-It accepts three parameters:
+It accepts four parameters:
 
-- `UploadedFile|string $fileOrPath`: uploaded image file or path to the image
-- `string $mediaCollection`: defaults to `cover`
-- `string $diskName`: storage disk, defaults to `public`; disks are defined in `config/filesystems.php`
+- `UploadedFile|string $fileOrPath`: Uploaded image file or path to the image.
+- `string $mediaCollection`: Name of the media collection which you want to process. Defaults to `cover`.
+- `string $diskName`: Storage disk name. Defaults to empty string and uses the disk defined with `useDisk` chained method. You can set this parameter to override the default disk. You can use custom local storage or external storage. All disks are defined in `config/filesystems.php`.
+- `bool $public = true`: File will be publicly visible when true. This is usually used when uploading files to remote disks.
 
 ```php
 if ($request->image) {
@@ -346,10 +354,116 @@ $post->getFirstMediaUrl('cover', 'thumb')
 
 For additional customization, please, visit the package [docs](https://spatie.be/docs/laravel-medialibrary/v11/introduction).
 
-## Make it fast
+### Storage (disks)
 
-Docs coming soon...
+By default, there are two local disks: `public` (/storage) and `avatars` (/storage/avatars), and one external disk: `s3`.
+
+You can update those disks, delete them (if you delete them you will need to update the code using those disks) or create new local or external disks (MinIO, DigitalOcean Spaces, etc.).
+
+#### Local public disks
+
+To make files accessible from the web, you should create a symbolic link from your `public/storage` folder to the disk storage location. You can do this by running this terminal command:
+
+```bash
+php artisan storage:link
+```
+
+You can also destroy the link if you don't use it:
+
+```bash
+php artisan storage:unlink
+```
+
+Read more about it in [official Laravel docs](https://laravel.com/docs/11.x/filesystem#the-public-disk).
+
+#### AWS S3
+
+To configure S3 driver as your storage, follow the [official Laravel docs](https://laravel.com/docs/11.x/filesystem#s3-driver-configuration).
+
+## Translations
+
+At the moment, starter kit supports one language out of the box. Default language is english.
+
+To change default locale, set `APP_LOCALE` in `.env` file to desired locale.
+
+```bash
+APP_LOCALE=hr
+```
+
+Then duplicate `en.json` file and `en` folder in `/lang`, rename them to your new locale and adjust the translations.
+
+### Localization
+
+If you want to add localization to your application, you can do it using the [Laravel Localization](https://github.com/mcamara/laravel-localization) package.
+
+You will also need to handle Model translations using other packages or custom.
+
+<Info>
+  Pre-configured localization with translatable Models will be available with{" "}
+  {appName} v2.
+</Info>
+
+## Sitemap
+
+`app/Console/Commands/GenerateSitemap.php`
+
+Generate `sitemap.xml` file for your application.
+
+Sitemap command is triggered daily, which you can update here `routes/console.php`.
+
+<Info>
+  To run scheduled commands your should [setup the
+  queue](https://laravel.com/docs/11.x/queues#supervisor-configuration) on your
+  server.
+</Info>
+
+To run it manually, run this in your terminal:
+
+```bash
+php artisan sitemap:generate
+```
 
 ## Server side rendering
 
-Docs coming soon...
+To build file for SSR, first run this command to generate routes:
+
+```bash
+php artisan ziggy:generate
+```
+
+Then build the resource files:
+
+```bash
+npm run prod
+```
+
+Then start Inertia SSR server.
+
+### Local development
+
+Run this command in your terminal. This will start the SSR on port `13714`.
+
+```bash
+php artisan inertia:start-ssr
+```
+
+To run Inertia SSR on custom port, update the `url` in config file `config/inertia.php` and pass the port number as second prop to `createServer` method in `resources/js/ssr.ts` file.
+
+```php
+'ssr' => [
+    'enabled' => true,
+    'url' => 'http://127.0.0.1:13715',
+],
+```
+
+```javascript
+createServer((page) => {
+  // Create Inertia App...
+}, 13715);
+```
+
+### Laravel Forge
+
+Go to your site, click Application in sidebar and under Laravel section enable Inertia SSR. That's it.
+
+It will create a daemon and update your deploy script to handle the SSR.

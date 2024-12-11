@@ -5,8 +5,137 @@ description: "Section block with reviews and testimonials."
 
 ## Default
 
-Docs coming soon...
+`resources/js/Components/Sections/Testimonials.vue`
+
+This component will render testimonials in columns (up to 4 per row on the biggest screens).
+
+It can accept 4 properties:
+
+- **data**: required, list of testimonials
+- **variant**: optional, defines the testimonial card layout
+- **animateOnHover**: optional, defines the testimonial card hover effects
+- **class**: optional, list of classes to apply to wrapper
+
+```javascript
+<Testimonials :data="testimonials"></Testimonials>
+```
+
+You can also add heading via slot:
+
+```javascript
+<Testimonials :data="testimonials">
+	<template v-slot:heading>This is Heading</template>
+</Testimonials>
+```
+
+### Variants
+
+There are two predefined variants: `v1` (default) and `v2`.
+
+<div className="grid gap-x-4 sm:grid-cols-2">
+  <img src="/images/testimonial-v1.jpg" alt="Testimonial v1" />
+  <img src="/images/testimonial-v2.jpg" alt="Testimonial v2" />
+</div>
+
+```javascript
+// v1
+<Testimonials :data="testimonials" />
+// v1
+<Testimonials :data="testimonials" variant="v1" />
+// v2
+<Testimonials :data="testimonials" variant="v2" />
+```
+
+### Animate on hover
+
+When `VITE_ANIMATIONS` is set to `true` or `1`, the default value will be set to **all**, otherwise it will be set to **none**.
+
+You can override this behavior by passing the `animate-on-hover` prop.
+
+```javascript
+// all - will apply all available animations
+<Testimonials :data="testimonials" animate-on-hover="all" />
+// all - no animations
+<Testimonials :data="testimonials" animate-on-hover="none" />
+
+// array: scale, shadow, opacity, blur - apply one or more animations
+<Testimonials :data="testimonials" :animate-on-hover="['scale']" />
+<Testimonials :data="testimonials" :animate-on-hover="['scale', 'shadow']" />
+<Testimonials :data="testimonials" :animate-on-hover="['opacity', 'blur']" />
+```
 
 ## Auto-scroll
 
-Docs coming soon...
+`resources/js/Components/Sections/TestimonialsAutoScroll.vue`
+
+This component will render testimonials in 2 rows, scrolling in opposite directions.
+
+Scrolling effect is provided by [Embla Carousel](https://www.embla-carousel.com/plugins/auto-scroll)
+
+It can accept 8 properties:
+
+- **data**: required, list of testimonials
+- **variant**: optional, defines the testimonial card layout
+- **speed**: optional, defines the scrolling speed, defaults to 0.75
+- **draggable**: optional, make cards draggable, defaults to false
+- **stopOnInteraction**: optional, stops scrolling on interaction, defaults to false
+- **stopOnMouseEnter**: optional, stops scrolling on mouse enter, defaults to false
+- **startDelay**: optional, defines the delay in milliseconds before scrolling starts, defaults to 0
+- **class**: optional, list of classes to apply to wrapper
+
+```javascript
+<TestimonialsAutoScroll :data="testimonials"></TestimonialsAutoScroll>
+```
+
+You can also add heading via slot:
+
+```javascript
+<TestimonialsAutoScroll :data="testimonials">
+	<template v-slot:heading>This is Heading</template>
+</TestimonialsAutoScroll>
+```
+
+### Variants
+
+There are two predefined variants: `v1` (default) and `v2`.
+
+<div className="grid gap-x-4 sm:grid-cols-2">
+  <img src="/images/testimonial-v1.jpg" alt="Testimonial v1" />
+  <img src="/images/testimonial-v2.jpg" alt="Testimonial v2" />
+</div>
+
+```javascript
+// v1
+<TestimonialsAutoScroll :data="testimonials" />
+// v1
+<TestimonialsAutoScroll :data="testimonials" variant="v1" />
+// v2
+<TestimonialsAutoScroll :data="testimonials" variant="v2" />
+```
+
+### Examples
+
+<CodeGroup>
+
+```javascript speed
+// Faster scrolling
+<TestimonialsAutoScroll :data="testimonials" :speed="2" />
+// Slower scrolling
+<TestimonialsAutoScroll :data="testimonials" :speed="0.5" />
+```
+
+```javascript draggable
+// Scrolling will continue after drag
+<TestimonialsAutoScroll :data="testimonials" draggable />
+// Scrolling will stop after drag
+<TestimonialsAutoScroll :data="testimonials" draggable stop-on-interaction />
+```
+
+```javascript stop on hover
+// Scrolling will stop on mouse enter and continue on mouse out
+<TestimonialsAutoScroll :data="testimonials" stop-on-mouse-enter />
+// Scrolling will stop on hover and continue 500 milliseconds on mouse out
+<TestimonialsAutoScroll :data="testimonials" stop-on-mouse-enter :start-delay="500" />
+```
+
+</CodeGroup>

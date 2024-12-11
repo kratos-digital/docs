@@ -25,7 +25,8 @@ Available features:
 - Bulk actions (coming soon)
 - Export to CSV and PDF (coming soon)
 
-To generate DataTable, you should first return `Vue` file via `Inertia::render()` from your Controller.<br />
+To generate DataTable, you should first render `Vue` file component using `Inertia::render()` from your Controller.
+
 Properties `data` and `columns` are required, while `filters` prop is optional.
 
 ```php UserController.php
@@ -34,17 +35,16 @@ public function index(): Response
     return Inertia::render('Admin/Users/Index', [
         'data' => User::get(),
         'columns' => [
-            Column::make('id')->toArray(),
-            Column::make('name')->toArray(),
-            Column::make('email')->toArray(),
+            Column::make('id'),
+            Column::make('name'),
+            Column::make('email'),
             ActionColumn::make(route: 'admin.users')->render(),
         ],
-        // 'filters' => [],
     ]);
 }
 ```
 
-Then in your file `Admin/Users/Index`, define props and render `DataTable` component.
+Then in your file component, for example in `Admin/Users/Index`, define the props (using `DataTableProps` type) and render the `DataTable` component.
 
 ```javascript
 <script setup lang="ts">
@@ -63,13 +63,14 @@ const props = defineProps<DataTableProps>();
 Go to `app/Http/Controllers/Admin/UserController.php`, or any similar Controller, and check out `index` method to see how columns are generated.
 
 Columns are generated via `Column::class`, as seen in the code example above.<br />
-Each column should be generated using `make` method and `toArray` as last method in chain.
+Each column should be generated using `make` method. All other methods are optional.
 
 ### Create column
 
 First prop is name/ID of the column and should be unique between columns.<br />
-Second prop is column's title (table head) and it's optional<br />
-When title is not provided, it will be generated from ID. Title for `name` will be _Name_, for `email` will be _Email_, etc.
+Second prop is column's title (table head) and it's optional.<br />
+When title is not provided, it will be generated from name/ID.<br />.
+For example, auto-generated title for `name` column will be _Name_, for `email` will be _Email_, and so on.
 
 ```php
 Column::make('name', __('Full name'))
@@ -77,7 +78,7 @@ Column::make('name', __('Full name'))
 
 ### Disable sorting
 
-This column will not be sortable. Columns are sortable by default.
+Columns are sortable by default. Chain this method to disable sorting for the column.
 
 ```php
 Column::make('name')->disableSorting()
@@ -85,7 +86,7 @@ Column::make('name')->disableSorting()
 
 ### Disable hiding
 
-Visiblity toggle for this column will be disabled and column will be visible always. Column visibility toggle is enabled by default.
+Column visibility toggle is enabled by default. Visiblity toggle for this column will be disabled and column will be always visible.
 
 ```php
 Column::make('name')->disableHiding()
@@ -117,7 +118,7 @@ Column::make('image')->thumbnail()
 
 ### Class
 
-Add any class to value.
+Add class to the value cell.
 
 If class is not generated, safelist it, since it’s dynamically generated and Tailwind can’t recognize such classes on its own.<br />
 Just in case, you can safelist all clasess you plan to use here.
@@ -132,6 +133,8 @@ Column::make('email')->class('truncate max-w-16')
 ### Cell width
 
 Set width of the cell in pixels to prevent auto-sizing or specific width.
+
+Size equal to 1 will make cell's width as minimum as possible.
 
 ```php
 Column::make('name')->size(1)
@@ -148,18 +151,10 @@ Column::make('name')->centered()
 ### Make column hidden
 
 Useful when you need to filter by some value, but don't want to show the column. For example, when Model is trashed (soft-deleted).<br />
-Since filtering is done via TanStack Table it must have access to the data.
+Since filtering is done via TanStack Table it should have access to the data.
 
 ```php
 Column::make('trashed')->hidden()
-```
-
-### Get column data
-
-Along the `make()`, this is the required method which you should call as the last method in chain to get correct data for rendering.
-
-```php
-Column::make('name')->toArray()
 ```
 
 ### Customize
@@ -167,6 +162,8 @@ Column::make('name')->toArray()
 To update content rendering in DataTables go to file `resources/js/lib/utils.ts` and update function `mapColumns` as you wish.
 
 You can check by `accessorKey` (which is mapped from column name/ID) for specific columns, or you can define new `renderAs` method for common columns.
+
+Some of specifically rendered columns are `id` `session_id` `thumb` `badge` and `status`.
 
 To update or add Column properties go to file `app/Services/DataTable/Column.php`.
 
@@ -177,14 +174,13 @@ Actions are generated similar as columns, using chained methods.
 
 ### Create action
 
-First prop is column name and should be unique between columns.<br />
+First prop is column name and should be unique between actions.<br />
 Second prop is the action's label, and it's optional<br />
 When label is not provided, it will be generated from name. Label for `show` will be _Show_, for `edit` will be _Edit_, etc.
 
 ```php
 Action::make('show', __('Show order'))
     ->route('admin.orders.show')
-    ->toArray()
 ```
 
 ### Action route
@@ -230,7 +226,7 @@ This action will be available only when `trashed` column value is `false`.
 Action::make('impersonate', __('Login as user'))->when('trashed', false)
 ```
 
-### Separate actions (dropdown)
+### Separate actions (in dropdown view)
 
 Separate action with border in dropdown box.
 
@@ -238,19 +234,11 @@ Separate action with border in dropdown box.
 Action::make('name')->separated()
 ```
 
-### Get action data
-
-Along the `make()`, this is the required method which you should call as the last method in chain.
-
-```php
-Action::make('name')->toArray()
-```
-
 ### Dropdown actions
 
 Actions can be rendered as dropdown.
 
-Dropdown actions are recommended when there are **more then 3 actions**.<br />
+Dropdown actions are recommended when there are **more than 3 actions**.<br />
 Check the code below to see how to render dropdown actions.<br />
 
 ### Inline actions
@@ -288,24 +276,24 @@ ActionColumn::make('inline', 'admin.users')->render()
 
 ### Custom actions
 
-To define custom actions, you should pass your actions in `render()` method.
+To define custom actions, you should pass your actions in `render()` method of 1.
 
 ```php
 ActionColumn::make('inline')
     ->render(
         Action::make('show')
-            ->route('admin.orders.show')
-            ->toArray(),
+            ->route('admin.orders.show'),
 
         Action::make('edit')
-            ->route('admin.orders.edit')
-            ->toArray(),
+            ->route('admin.orders.edit'),
     ),
 ```
 
 ### Custom actions via slots
 
-To define custom actions via Vue slot, you should define the type of actions: inline or dropdown.
+To define custom actions via Vue slot, you should define the type of actions: inline or dropdown, without the route prop.
+
+Rendering actions via slots is useful when you want customized UI for your actions, for example to open dialogs/popups/sheets for editing, instead of dedicated pages.
 
 ```php
 // Dropdown
@@ -336,16 +324,13 @@ Create filter using `make()` method which accepts one prop for filter title.
 ```php
 'filters' => [
     'verified' => Filter::make(__('Email verified'))
-        ->trueFalse(true)
-        ->toArray(),
+        ->trueFalse(true),
 
     'blocked' => Filter::make(__('Blocked'))
-        ->trueFalse(false)
-        ->toArray(),
+        ->trueFalse(false),
 
     'trashed' => Filter::make(__('Trashed'))
-        ->trueFalse(false)
-        ->toArray(),
+        ->trueFalse(false),
 ],
 ```
 
@@ -368,7 +353,7 @@ Filter::make(__('Email verified'))->trueFalse(false)
 
 Filter DataTable by selected values.
 
-Data of available filters should be Collection or array of arrays with `value` and `label` props.
+Data of available filters should be [Collection](https://laravel.com/docs/11.x/collections) or array of arrays with `value` and `label` props.
 
 ```php
 $tags = Tag::get()->map(fn ($tag) => [
@@ -383,7 +368,7 @@ Filter::make(__('Tags'))->data($tags)
 
 By default, all filters can be searched and filtered inside dedicated dropdown.
 
-To disable search, use this method.
+To disable search, use this method. Disabling search is recommended when there are few filters so search would be redundant.
 
 ```php
 Filter::make(__('Tags'))->data($tags)->disableSearch()
@@ -406,8 +391,20 @@ Docs coming soon...
 
 ## Pagination
 
-Docs coming soon...
+Each datatable comes with default pagination which shows **10** rows per page and you can select to show _10_, _20_ , _30_, _40_, _50_ or _100_ rows at once when viewing the data.
 
-### Rows per page
+To change global defaults go to `resources/js/Components/DataTable/Index.vue` file and update default values for `rowsPerPage` and `pageSize` props.
 
-Docs coming soon...
+To update defaults for specific datatable you can pass those props via controller:
+
+```php
+return Inertia::render('SomePageWithDataTable', [
+    // other props here
+    'rowsPerPage' => [5, 10, 20],
+    'pageSize' => 5,
+]);
+```
+
+This will set select options to _5_, _10_ and _20_, and **5** rows per page by default.
+
+You can find sample code in `AdminTestimonialController.php` controller file.

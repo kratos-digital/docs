@@ -3,4 +3,42 @@ title: "Features"
 description: "Section block with feature cards."
 ---
 
-Docs coming soon...
+## Tabs
+
+`resources/js/Components/Sections/FeatureTabs.vue`
+
+This component will render features as tabs (recommended 3-4 features). You can use it for your most important features.
+
+It accepts 4 properties:
+
+- **data**: required, list of features (you can find example in `resources/js/Pages/Index.vue`)
+- **animate**: defaults to global animation value, images will animate on tab switch
+- **duration**: defaults to 0.75 seconds, defines the animation duration
+- **scaleOffset**: defaults to 0.025, defines the scale value of animation
+
+## Sections
+
+`resources/js/Components/Sections/FeatureSections.vue`
+
+This component will render features in rows with images positioned left/right (recommended 2 features minimum). You can use it for your most important features.
+
+It accepts 4 properties:
+
+- **data**: required, list of features (you can find example in `resources/js/Pages/Index.vue`)
+- **firstPosition**: defaults to right, defined the position of first image
+- **animate**: defaults to global animation value, images will animate when in viewport
+- **class**: optional, list of classes to apply to wrapper
+
+## Cards
+
+`resources/js/Components/Sections/FeatureCards.vue`
+
+This component will render features as cards in grid layout (up to 3 per row on the biggest screens).
+
+It accepts 5 properties:
+
+- **data**: required, list of features (you can find example in `resources/js/Pages/Index.vue`)
+- **centered**: defaults to false, defines the content alignment (left or centered)
+- **animate**: defaults to global animation value, icons will animate when in viewport
+- **class**: optional, list of classes to apply to wrapper
+- **classIcon**: optional, list of classes to apply to icon

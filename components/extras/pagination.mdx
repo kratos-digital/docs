@@ -3,4 +3,29 @@ title: "Pagination"
 description: "Display pagination for paginated data such as blog posts."
 ---
 
-Docs coming soon...
+`resources/js/Components/Pagination.vue`
+
+Component accepts two parameters:
+
+- **data**: Pagination data (total, per page and current page). You can use helper method `get_pagination_data` to get pagination data.
+- **target**:
+- **variant**: You can render `default` or `simple` pagination. Simple pagination will have previous and next buttons and current page indicator, while the default one has multiple page numbers.
+- **target**: ID of the data section. Required to scroll to the start on page change.
+
+```php
+$data = Post::latest()->paginate(12);
+
+return Inertia::render('Blog', [
+    'posts' => $data->items(), // Pass only items from paginated object
+    'meta' => [
+        // title, description and other meta data, ...
+        'pagination' => get_pagination_data($data),
+    ],
+]);
+```
+
+```javascript
+<Pagination :data="meta.pagination" target="#blog" />
+
+<Pagination :data="meta.pagination" target="#blog" variant="simple" />
+```

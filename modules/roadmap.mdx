@@ -13,7 +13,7 @@ Users can also upvote and/or downvote features and add comments to features.
 
 Each module can be enabled or disabled in your application, without affecting other parts of your code.
 
-### Terminal
+### Via terminal
 
 ```bash
 php artisan module:enable Roadmap
@@ -29,9 +29,29 @@ php artisan module:disable Roadmap
 
 Set Roadmap to `true` (enabled) or `false` (disabled).
 
+## Override files
+
+To override tables for database, you can either update original migration file in `modules/Roadmap/database/migrations` folder or publish migrations to your application's `migrations` folder.
+
+```bash
+php artisan module:publish-migration roadmap
+```
+
+To override templates, publish them using this command. Files will be copied to `resources/js/Modules/Roadmap` folder where you can update them as you wish.
+
+```bash
+php artisan app:publish-module-view roadmap
+```
+
+Upon calling this command you will be prompted to copy files for admin area, which is disabled by default.
+
+<Warning>
+  It's recommended to publish files if you need to update anything.
+</Warning>
+
 ## Configuration
 
-Open this file `modules/Roadmap/config/config.php` and update Roadmap settings to fit your application.
+Go to dedicated `config` file and update the settings to fit your application.
 
 ### Author can vote
 

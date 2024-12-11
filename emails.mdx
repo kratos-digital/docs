@@ -7,9 +7,11 @@ import { appName } from "/snippets/vars.mdx";
 
 ## Email providers
 
-### Mailtrap
+### Local / Testing
 
-Use in local/dev environment to test email sending.
+#### Mailtrap
+
+I personally use Mailtrap for emails in local environment, so it's my recommendation. This doesn't mean other services mentioned below are worse or better in any way.
 
 https://laravel.com/docs/11.x/mail#mailtrap
 
@@ -26,45 +28,61 @@ MAIL_ENCRYPTION=null
 MAIL_FROM_ADDRESS="hello@example.com"
 ```
 
-### HELO
-
-Use in local/dev environment to test email sending.
+#### HELO
 
 Coming soon...
 
-### Mailpit
-
-Use in local/dev environment to test email sending.
+#### Mailpit
 
 Coming soon...
 
-### Mailgun
+### Production / Staging
 
-Use in prod/staging environment to send real emails.
+**{appName}** doesn't come with any pre-installed email service since there is not one that fits all cases, and it's actually very easy to setup any of the services mentioned below.
 
-Coming soon...
+To implement desired mail service, just follow the instructions below or [official Laravel docs](https://laravel.com/docs/11.x/mail#driver-prerequisites).
 
-### Postmark
-
-Use in prod/staging environment to send real emails.
+#### Mailgun
 
 Coming soon...
 
-### Resend
-
-Use in prod/staging environment to send real emails.
+#### Postmark
 
 Coming soon...
 
-### MailerSend
-
-Use in prod/staging environment to send real emails.
+#### Resend
 
 Coming soon...
 
-### Custom
+#### MailerSend
 
-Use in prod/staging environment to send real emails.
+1. Install the package:
+
+```bash
+composer require mailersend/laravel-driver
+```
+
+2. Create a [MailerSend](https://www.mailersend.com/signup) account.
+
+Once your are logged in, go to Email - Domains to add your domain. You should also approve your account to avoid limitations.
+
+3. Go to Integrations and create API token for your domain. Update your `.env` file:
+
+```bash
+MAIL_MAILER=mailersend
+MAILERSEND_API_KEY=your-api-key
+MAIL_FROM_ADDRESS=app@yourdomain.com
+```
+
+4. Add MailerSend to `config/mail.php` configuration file inside `mailers` array:
+
+```php
+'mailersend' => [
+    'transport' => 'mailersend',
+],
+```
+
+#### Custom
 
 https://laravel.com/docs/11.x/mail#custom-transports
 
@@ -88,12 +106,58 @@ Docs coming soon...
 
 Docs coming soon...
 
-## Email preview
+## Previews emails
 
-When your are logged in as `Admin`, you can preview emails in non-production environment.
+You can preview emails in local environment.
 
-Docs coming soon...
+Preview routes are defined in `routes/emails.php` route file.
 
-## Email template
+Here is the list of all email preview routes (each route is prefixed with `/email-previews`):
 
-Docs coming soon...
+- `/email-verification` Email sent upon user registration (when email verification is enabled)
+- `/password-reset` Email sent upon password reset request
+- `/subscribed` Email sent upon successful subscription
+
+## Email templates
+
+Default emails are rendered using markdown files located in `resources/views/mail` folder.
+
+Main message layout: `resources/views/vendor/mail/html/message.blade.php`
+
+```php
+// Default title "Hello!"
+<x-mail::message>
+    // Mail content here
+</x-mail::message>
+
+// Custom title
+<x-mail::message :title="$title">
+    // Mail content here
+</x-mail::message>
+
+// If no title and user model is provider, the title will be "Hello, :name!" where name is user's name
+// You can also pass url and action text, which will display subcopy in cases where button is not rendered
+<x-mail::message :user="$user" :url="$url" :action-text="$actionText">
+    // Mail content here
+</x-mail::message>
+```
+
+List of all components used in email templates are located in `resources/views/vendor/mail/html` folder:
+
+- layout: Main HTML file to render email template. You should probably leave this as-is.
+- header: Application name with link to website, positioned above the content. You can update it to show your logo or anything relevant.
+- footer: Copyright text below the content.
+- panel: Highlighted text block.
+- table: Table block.
+- button: Action button. Accepts three parameters: **color**: primary (default), blue, green/success, red/error; **url** and **align**: left, right, center (default). You can add custom colors to _default.css_ `button-{color_name}`
+
+```php
+<x-mail::button color="green" :url="$url" align="left">
+    @lang('Click me')
+</x-mail::button>
+```
+
+- subcopy: Smaller text used as disclaimer.
+- salutation: Included in message component.
+
+To change style, you can update `resources/views/vendor/mail/html/themes/default.css` CSS file.

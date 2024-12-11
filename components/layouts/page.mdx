@@ -3,6 +3,55 @@ title: "Page Layout"
 description: "Layout for public-facing pages."
 ---
 
-Docs coming soon...
+## User
 
-checkAuth
+If you need to use User object in your components, you can get it quickly from layout.
+
+```javascript
+<PageLayout #default="{ user }">
+    {{ user }}
+</PageLayout>
+```
+
+You can see the real example in `modules/Roadmap/resources/js/Pages/Show.vue`
+
+Usually you could get User object this way:
+
+```javascript
+const user = computed(() => usePage().props.auth.user);
+```
+
+## Global props
+
+You can define global layout props and pass them to its slot.
+
+This is example of default slot for PageLayout component:
+
+```javascript
+// PageLayout main slot
+<slot :user="user" :showAuthModal="authRef?.open" :isAuth="authRef?.auth" :checkAuth="authRef?.check" />
+
+// Render content as PageLayout slot and use its props
+<PageLayout #default="{ user, showAuthModal, isAuth, checkAuth }">
+    Content goes here...
+    User name: {{ user?.name }}
+    User is authenticated {{ isAuth }}
+</PageLayout>
+```
+
+You can also pass global properties from parent to children using `provide` and `inject`.
+
+```javascript
+// Parent component
+import { provide } from "vue";
+
+provide("foo", "bar");
+```
+
+```javascript
+// Child component
+import { inject } from "vue";
+
+// Will be equal to "foo" or "" if not provided
+const foo: string = inject("foo", "");
+```

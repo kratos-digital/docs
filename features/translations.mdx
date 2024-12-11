@@ -2,4 +2,54 @@
 title: "Translations"
 ---
 
-Docs coming soon...
+import { appName } from "/snippets/vars.mdx";
+
+**{appName}** uses Laravel's default localization setup documented [here](https://laravel.com/docs/11.x/localization).
+
+Translations for base application are located in `/lang` folder as `en.json` and `php` translation files inside `/lang/en` folder.
+
+If default locale for your application is not english, you can rename them and translate the strings.
+
+If your application should be multilingual, you can follow the official documentation how to setup such behavior, or you can install composer packages to handle such cases.
+
+<Info>
+  Option to use multiple languages with language switcher will be one of the
+  features in **{appName}** version 2.
+</Info>
+
+# How to use
+
+You can save translations as [short keys](https://laravel.com/docs/11.x/localization#using-short-keys) or as [translation strings](https://laravel.com/docs/11.x/localization#using-translation-strings-as-keys).
+
+To render translations in backend, you can do this:
+
+```php
+// auth.php file, it looks for login key, and then looks for title key under login
+// This will output "Sign in" or however your define your translation
+$translationKey = __('auth.login.title');
+
+// This will output as-is
+$translationString = __('This is some string');
+```
+
+To render translations on frontend, you can do this:
+
+```javascript
+<script setup lang="ts">
+import { trans, wTrans } from "laravel-vue-i18n";
+
+console.log(trans("Foo"), wTrans("Bar"));
+</script>
+
+<template>
+    <p>{{ $t("auth.login.title") }}</p>
+    <p>{{ $t("This is some string") }}</p>
+</template>
+```
+
+<Info>
+  Those basics should be enough, but if you require an advanced implementation
+  you can check the plugin [Laravel Vue
+  i18n](https://github.com/xiCO2k/laravel-vue-i18n) used to provide Laravel
+  translations to Vue files.
+</Info>

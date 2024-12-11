@@ -3,4 +3,26 @@ title: "Made with"
 description: "Add branding badge in the corner."
 ---
 
-Docs coming soon...
+`resources/js/Components/MadeWith.vue`
+
+You can render the component like this:
+
+```javascript
+<MadeWith href="https://butchr.dev">Made with Butchr</MadeWith>
+```
+
+To add external link, pass the prop external with the component:
+
+```javascript
+<MadeWith href="https://butchr.dev" external>
+  Made with Butchr
+</MadeWith>
+```
+
+You can also change the position of component to display it left, right (default) or center:
+
+```javascript
+<MadeWith href="https://butchr.dev" external position="center">
+  Made with Butchr
+</MadeWith>
+```
