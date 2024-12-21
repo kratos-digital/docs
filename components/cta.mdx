@@ -3,4 +3,102 @@ title: "Call to action"
 description: "Section block with call to action button."
 ---
 
-Docs coming soon...
+`resources/js/Components/Sections/CallToAction.vue`
+
+```javascript
+import CallToAction from "@/Components/Sections/CallToAction.vue";
+```
+
+## Props
+
+### Container layout
+
+This will define how container will be rendered.
+
+You can select between three different layouts by passsing the prop `containerLayout?: "default" | "full" | "boxed"` to the component.
+
+Default is `default`.
+
+### Container background
+
+This will define the background color of container.
+
+You can select between three different layouts by passsing the prop `containerBackground?: "none" | "primary" | "inverted"` to the component.
+
+Default is `inverted`.
+
+### Layout
+
+This will define the content alignment.
+
+You can select between three different layouts by passsing the prop `layout?: "centered" | "stacked" | "justified"` to the component.
+
+Default is `centered`.
+
+### Heading
+
+Similar as in [Heading component](/components/heading) you can pass title, subtitle and description to render the heading.
+
+All props are optional.
+
+### Content (slot)
+
+Here you can define your call-to-action buttons or add any other content.
+
+## Examples
+
+<CodeGroup>
+
+```javascript Default
+<CallToAction
+	:title="$t('Consectetur adipisicing elit amet sit')"
+	:subtitle="$t('Call To Action')"
+	:description="$t('Sit amet consectetur adipisicing elit consectetur adipisicing elit.')"
+>
+	<Button type="button" variant="primary" size="lg">
+		{{ $t("Just do it!") }}
+	</Button>
+	<Button type="button" variant="ghost" size="lg">
+		{{ $t("Learn more") }}
+		<ArrowRightIcon class="size-4" />
+	</Button>
+</CallToAction>
+```
+
+```javascript Boxed
+<CallToAction
+	container-layout="boxed"
+	:title="$t('Consectetur adipisicing elit amet sit')"
+	:subtitle="$t('Call To Action')"
+	:description="$t('Sit amet consectetur adipisicing elit consectetur adipisicing elit.')"
+>
+	<Button type="button" variant="primary" size="lg">
+		{{ $t("Just do it!") }}
+	</Button>
+	<Button type="button" variant="ghost" size="lg">
+		{{ $t("Learn more") }}
+		<ArrowRightIcon class="size-4" />
+	</Button>
+</CallToAction>
+```
+
+```javascript Boxed, primary bg, stacked content
+<CallToAction
+	container-layout="boxed"
+	container-background="primary"
+	layout="stacked"
+	:title="$t('Consectetur adipisicing elit amet sit')"
+	:subtitle="$t('Call To Action')"
+	:description="$t('Sit amet consectetur adipisicing elit consectetur adipisicing elit.')"
+>
+	<Button type="button" variant="primary" size="lg">
+		{{ $t("Just do it!") }}
+	</Button>
+	<Button type="button" variant="ghost" size="lg">
+		{{ $t("Learn more") }}
+		<ArrowRightIcon class="size-4" />
+	</Button>
+</CallToAction>
+```
+
+</CodeGroup>

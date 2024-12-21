@@ -7,13 +7,17 @@ import { appName } from "/snippets/vars.mdx";
 
 ## Requirements
 
-Before getting started, make sure you have installed `PHP 8.3+`, `Node.js 21+`, `Nginx` or `Apache` server, and (optionaly) one of the supported database services: `SQLite 3.26+`, `MySQL 5.7+`, `PostgreSQL 10.0+`, `MariaDB 10.3+` or `SQL Server 2017+`.<br />
+Before getting started, make sure you have installed `PHP 8.3+`, `Node.js 21+`, `Nginx` or `Apache` server, and (optionally) one of the supported database services: `SQLite 3.26+`, `MySQL 5.7+`, `PostgreSQL 10.0+`, `MariaDB 10.3+` or `SQL Server 2017+`.<br />
 You should also have `Composer` (dependency manager for PHP) installed.
 
 ### Laravel Herd
 
 [Laravel Herd](https://herd.laravel.com/) is highly recommended local development tool for Laravel. It's very simple to setup and it provides all of the requirements to run **{appName}** (and much more).<br />
 It's available for MacOS and Windows.
+
+### Docker
+
+Instructions coming soon...
 
 ### Homestead
 
@@ -27,19 +31,112 @@ Instructions coming soon...
 
 Open your terminal, and run those commands to get started.
 
-### Clone repository
+### Clone the repository
 
 ```bash
-git clone git@github.com:butchr/laravel-starter-kit.git [APP_NAME]
+git clone git@github.com:kratos-digital-org/butchr-boilerplate.git YOUR_APP_NAME
+cd YOUR_APP_NAME
 ```
 
-### Go to your App folder
+### Stay in sync with upstream repo
+
+Use those instructions if you want to keep version control and track future updates in main repository.
+
+#### Check remotes
 
 ```bash
-cd [APP_NAME]
+git remote -v
+```
+
+You should see this output:
+
+```bash
+origin git@github.com:kratos-digital-org/butchr-boilerplate.git (fetch)
+origin git@github.com:kratos-digital-org/butchr-boilerplate.git (push)
+```
+
+#### Update origin remote
+
+```bash
+git remote set-url origin YOUR_NEW_REPOSITORY
+```
+
+#### Add upstream remote
+
+```bash
+git remote add upstream git@github.com:kratos-digital-org/butchr-boilerplate.git
+```
+
+#### Verify remotes again
+
+```bash
+git remote -v
+```
+
+You should now see this output:
+
+```bash
+origin YOUR_NEW_REPOSITORY (fetch)
+origin YOUR_NEW_REPOSITORY (push)
+upstream git@github.com:kratos-digital-org/butchr-boilerplate.git (fetch)
+upstream git@github.com:kratos-digital-org/butchr-boilerplate.git (push)
+```
+
+#### Fetch updates from upstream
+
+```bash
+git fetch upstream
+git merge upstream/main
+```
+
+#### Add, commit and push as usual
+
+```bash
+git add .
+git commit -m "Your commit message"
+git push -u origin main # or whatever branch you use
+```
+
+### Standalone project
+
+Use those instructions if you want to treat your project as an independent repository without any version control and future updates.
+
+All future updates you will need to handle manually.
+
+#### Remove current git repo
+
+```bash
+rm -rf .git
+```
+
+#### Initialize a new git repo
+
+```bash
+git init
+```
+
+#### Commit all files
+
+```bash
+git add .
+git commit -m "Your commit message"
+```
+
+#### Create remote repo
+
+```bash
+git remote add origin YOUR_NEW_REPOSITORY
+```
+
+#### Push your changes
+
+```bash
+git push -u origin main # or whatever branch you use
 ```
 
 ### Create environment file
+
+After you have setup your git repository, continue with the app setup by creating an environment file.
 
 ```bash
 cp .env.example .env
@@ -49,20 +146,20 @@ cp .env.example .env
 
 By default, **{appName}** is using `SQLite` as database connection.
 
-To change database name (default is `database.sqlite`) set the variable in your `.env`. Make sure to enter the correct path.
+To change database name (default is `database.sqlite`) set the variable in your `.env`. Make sure to enter the absolute path, not just the database name.
 
 ```bash
 DB_DATABASE="/code/butchr/database/butchr.sqlite"
 ```
 
-If you want to use the default one, just comment the variable
+If you want to use the default one (_database.sqlite_), just comment or remove the variable in your .env file
 
 ```bash
 #DB_DATABASE=
 ```
 
 To use different database connection, feel free to update the variables accordingly.<br />
-This is example for `MySQL` connection, but you can use any of the supported services.
+This is example for `MySQL` connection, but you can use any of the supported database services.
 
 ```bash
 DB_CONNECTION=mysql
@@ -86,7 +183,7 @@ php artisan app:init
   skip the manual setup all together when using quick installation.
 </Info>
 
-You will probably implement payments, so I recommend to generate your plans right after installation.
+You will probably want to implement your payment plans, so I recommend to generate your plans right after the installation.
 
 Go to [Generate products](/payments/stripe#generate-products) and follow the docs. You can also visit [Payment settings](/payments/settings) to adjust your checkout pages.
 
@@ -139,5 +236,6 @@ Visit http://127.0.0.1:8000/ and see your application.
 
 <Warning>
   Before using the application, you should run
-  [migrations](/development#database) to create your database.
+  [migrations](/development#database) to create your database (and seeders to
+  have some data to work with).
 </Warning>
